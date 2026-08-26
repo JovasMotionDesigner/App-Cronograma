@@ -4,28 +4,28 @@
  */
 
 const TEAM_MEMBERS = [
-    { id: "jose", name: "José Luis Vásquez", role: "Coordinador & Motion/Digital", avatar: "JV", color: "bg-blue-600" },
-    { id: "marcela", name: "Marcela Castillo", role: "Diseñadora Gráfica & Editorial", avatar: "MC", color: "bg-rose-600" },
-    { id: "ezequiel", name: "Ezequiel Medrano", role: "Diseñador UI/UX & Social Media", avatar: "EM", color: "bg-emerald-600" },
-    { id: "grupal", name: "Trabajo Grupal (Equipo)", role: "Colaboración General", avatar: "TG", color: "bg-purple-600" }
+    { id: "jose", name: "José Luis Vásquez", role: "Coordinador & Motion/Digital", avatar: "JV", color: "bg-blue-500 text-white" },
+    { id: "marcela", name: "Marcela Castillo", role: "Diseñadora Gráfica & Editorial", avatar: "MC", color: "bg-rose-500 text-white" },
+    { id: "ezequiel", name: "Ezequiel Medrano", role: "Diseñador UI/UX & Social Media", avatar: "EM", color: "bg-emerald-500 text-white" },
+    { id: "grupal", name: "Trabajo Grupal (Equipo)", role: "Colaboración General", avatar: "TG", color: "bg-purple-600 text-white" }
 ];
 
 const TASK_STATUSES = [
-    { id: "pendiente", label: "Pendiente", color: "bg-slate-500 text-white", border: "border-slate-400" },
-    { id: "en_proceso", label: "En Proceso", color: "bg-amber-500 text-white", border: "border-amber-400" },
-    { id: "en_revision", label: "En Revisión", color: "bg-blue-500 text-white", border: "border-blue-400" },
-    { id: "completada", label: "Completada", color: "bg-emerald-500 text-white", border: "border-emerald-400" }
+    { id: "pendiente", label: "Pendiente", badgeClass: "badge-pendiente", dot: "bg-slate-400" },
+    { id: "en_proceso", label: "En Proceso", badgeClass: "badge-en_proceso", dot: "bg-amber-500" },
+    { id: "en_revision", label: "En Revisión", badgeClass: "badge-en_revision", dot: "bg-blue-500" },
+    { id: "completada", label: "Completada", badgeClass: "badge-completada", dot: "bg-emerald-500" }
 ];
 
 const PHASES = [
-    { id: "fase1", number: 1, name: "Investigación & Briefing", icon: "search", color: "sky" },
-    { id: "fase2", number: 2, name: "Identidad Visual (Logo & ADN)", icon: "palette", color: "indigo" },
-    { id: "fase3", number: 3, name: "Manual de Marca Editorial", icon: "book-open", color: "purple" },
-    { id: "fase4", number: 4, name: "Catálogo & Fotografía", icon: "layers", color: "amber" },
-    { id: "fase5", number: 5, name: "Piezas Gráficas Redes Sociales", icon: "share-2", color: "pink" },
-    { id: "fase6", number: 6, name: "Sitio Web (UI/UX & Prototipo)", icon: "globe", color: "cyan" },
-    { id: "fase7", number: 7, name: "Aplicaciones, Punto de Venta & Packaging", icon: "package", color: "orange" },
-    { id: "fase8", number: 8, name: "Control de Calidad & Entregables", icon: "check-circle", color: "emerald" }
+    { id: "fase1", number: 1, name: "Investigación & Briefing", icon: "search", color: "sky", bg: "bg-sky-50 text-sky-600" },
+    { id: "fase2", number: 2, name: "Identidad Visual (Logo & ADN)", icon: "palette", color: "indigo", bg: "bg-indigo-50 text-indigo-600" },
+    { id: "fase3", number: 3, name: "Manual de Marca Editorial", icon: "book-open", color: "purple", bg: "bg-purple-50 text-purple-600" },
+    { id: "fase4", number: 4, name: "Catálogo & Fotografía", icon: "layers", color: "amber", bg: "bg-amber-50 text-amber-600" },
+    { id: "fase5", number: 5, name: "Piezas Gráficas Redes Sociales", icon: "share-2", color: "pink", bg: "bg-pink-50 text-pink-600" },
+    { id: "fase6", number: 6, name: "Sitio Web (UI/UX & Prototipo)", icon: "globe", color: "cyan", bg: "bg-cyan-50 text-cyan-600" },
+    { id: "fase7", number: 7, name: "Aplicaciones, Punto de Venta & Packaging", icon: "package", color: "orange", bg: "bg-orange-50 text-orange-600" },
+    { id: "fase8", number: 8, name: "Control de Calidad & Entregables", icon: "check-circle", color: "emerald", bg: "bg-emerald-50 text-emerald-600" }
 ];
 
 const INITIAL_COMPANIES_DATA = {
@@ -40,11 +40,9 @@ const INITIAL_COMPANIES_DATA = {
         docName: "Artesanías Maverick.docx",
         tagline: "El Salvador y Centroamérica en cada recuerdo artesanal",
         theme: {
-            primary: "#0284c7",
-            primaryLight: "#e0f2fe",
-            accent: "#f59e0b",
-            heroGradient: "from-sky-900 via-indigo-950 to-slate-950",
-            cardBorder: "border-sky-500/30"
+            gradient: "bg-grad-cyan",
+            accentText: "text-sky-600",
+            lightBadge: "bg-sky-50 text-sky-700"
         },
         brief: {
             summary: "Iniciativa enfocada en el auge del turismo en El Salvador, ofreciendo artesanías y recuerdos representativos de El Salvador, Guatemala y Nicaragua para turistas y residentes.",
@@ -373,11 +371,9 @@ const INITIAL_COMPANIES_DATA = {
         docName: "Cuestionario de Identidad Visual - Variedades Franco.docx",
         tagline: "Variedades Franco: Cuero, tradición y calidad garantizada",
         theme: {
-            primary: "#92400e",
-            primaryLight: "#fef3c7",
-            accent: "#ea580c",
-            heroGradient: "from-amber-950 via-stone-900 to-slate-950",
-            cardBorder: "border-amber-500/30"
+            gradient: "bg-grad-amber",
+            accentText: "text-amber-600",
+            lightBadge: "bg-amber-50 text-amber-700"
         },
         brief: {
             summary: "Negocio de tradición familiar nacido del esfuerzo de José Elí Franco, hoy administrado y con taller de fabricación artesanal liderado por Samuel Franco. Especialistas en artículos utilitarios de cuero y manufactura exclusiva.",

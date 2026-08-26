@@ -1,5 +1,5 @@
 /**
- * Main Application Logic - Cronograma Manual de Marca
+ * Main Application Logic - Cronograma Manual de Marca (Light Minimalist Edition)
  * Artesanías Maverick & Variedades Franco
  */
 
@@ -22,15 +22,13 @@ class CronogramaApp {
     init() {
         this.bindEvents();
         this.render();
-        // Initialize Lucide icons if available
         if (window.lucide) {
             window.lucide.createIcons();
         }
     }
 
-    // Load data with LocalStorage fallback
     loadData() {
-        const stored = localStorage.getItem('crono_brand_data_v2');
+        const stored = localStorage.getItem('crono_brand_data_light_v3');
         if (stored) {
             try {
                 return JSON.parse(stored);
@@ -42,11 +40,11 @@ class CronogramaApp {
     }
 
     saveData() {
-        localStorage.setItem('crono_brand_data_v2', JSON.stringify(this.data));
+        localStorage.setItem('crono_brand_data_light_v3', JSON.stringify(this.data));
     }
 
     resetData() {
-        if (confirm("¿Estás seguro de que deseas restablecer todas las tareas a su estado inicial predeterminado?")) {
+        if (confirm("¿Deseas restablecer todas las tareas al estado inicial predeterminado?")) {
             this.data = JSON.parse(JSON.stringify(INITIAL_COMPANIES_DATA));
             this.saveData();
             this.render();
@@ -63,7 +61,7 @@ class CronogramaApp {
             });
         });
 
-        // View switcher tabs (List, Kanban, Brief, Metrics)
+        // View switcher tabs
         document.querySelectorAll('[data-view-tab]').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const target = e.currentTarget.getAttribute('data-view-tab');
@@ -153,9 +151,9 @@ class CronogramaApp {
         document.querySelectorAll('[data-view-tab]').forEach(btn => {
             const isTarget = btn.getAttribute('data-view-tab') === viewId;
             if (isTarget) {
-                btn.className = "px-4 py-2 text-sm font-semibold rounded-lg bg-slate-800 text-white shadow-sm border border-slate-700 flex items-center gap-2";
+                btn.className = "px-4 py-2 text-xs sm:text-sm font-bold rounded-xl bg-white text-slate-800 shadow-sm flex items-center gap-2";
             } else {
-                btn.className = "px-4 py-2 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/50 flex items-center gap-2 transition";
+                btn.className = "px-4 py-2 text-xs sm:text-sm font-semibold rounded-xl text-slate-500 hover:text-slate-900 hover:bg-white/50 flex items-center gap-2 transition";
             }
         });
         this.renderContent();
@@ -171,14 +169,14 @@ class CronogramaApp {
     renderTabs() {
         document.querySelectorAll('[data-company-tab]').forEach(btn => {
             const comp = btn.getAttribute('data-company-tab');
-            btn.classList.remove('tab-active-maverick', 'tab-active-franco', 'tab-active-unified', 'border-transparent', 'text-slate-400');
+            btn.classList.remove('tab-active-maverick', 'tab-active-franco', 'tab-active-unified', 'text-slate-500', 'bg-transparent');
             
             if (comp === this.currentCompany) {
                 if (comp === 'maverick') btn.classList.add('tab-active-maverick');
                 else if (comp === 'franco') btn.classList.add('tab-active-franco');
                 else btn.classList.add('tab-active-unified');
             } else {
-                btn.classList.add('border-transparent', 'text-slate-400');
+                btn.classList.add('text-slate-500', 'bg-transparent');
             }
         });
     }
@@ -228,20 +226,20 @@ class CronogramaApp {
 
         if (this.currentCompany === 'all') {
             headerContainer.innerHTML = `
-                <div class="p-6 md:p-8 rounded-2xl glass-panel relative overflow-hidden bg-gradient-to-r from-purple-950/70 via-indigo-950/70 to-slate-950/80 border border-purple-500/30">
+                <div class="p-6 md:p-8 rounded-3xl minimal-panel relative overflow-hidden bg-white shadow-sm">
                     <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div>
                             <div class="flex items-center gap-2 mb-2">
-                                <span class="px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/40">Vista Global Unificada</span>
-                                <span class="px-3 py-1 text-xs font-semibold rounded-full bg-slate-800 text-slate-300">2 Empresas</span>
+                                <span class="px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full bg-purple-50 text-purple-700">Vista Global Unificada</span>
+                                <span class="px-3 py-1 text-xs font-semibold rounded-full bg-slate-100 text-slate-600">2 Empresas Salvadoreñas</span>
                             </div>
-                            <h1 class="text-2xl md:text-3xl font-extrabold text-white tracking-tight">Cronograma General: Artesanías Maverick & Variedades Franco</h1>
-                            <p class="text-slate-300 mt-2 max-w-3xl text-sm leading-relaxed">
-                                Supervisión y seguimiento consolidado de las 8 fases de diseño para ambas marcas salvadoreñas del Mercado Sagrado Corazón.
+                            <h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">Cronograma de Identidad: Artesanías Maverick & Variedades Franco</h1>
+                            <p class="text-slate-500 mt-2 max-w-3xl text-sm leading-relaxed">
+                                Planificación, seguimiento colaborativo y control de entregables para la elaboración del manual de marca de ambas empresas del Mercado Sagrado Corazón.
                             </p>
                         </div>
                         <div class="flex flex-wrap gap-2 items-center">
-                            <button onclick="app.downloadCombinedBriefs()" class="px-4 py-2.5 bg-purple-600 hover:bg-purple-500 text-white text-sm font-semibold rounded-xl transition shadow-lg shadow-purple-900/40 flex items-center gap-2">
+                            <button onclick="app.downloadCombinedBriefs()" class="px-5 py-3 bg-grad-purple text-white text-sm font-bold rounded-2xl shadow-lg shadow-purple-500/20 hover:opacity-95 transition flex items-center gap-2">
                                 <i data-lucide="file-down" class="w-4 h-4"></i> Descargar Ambos Briefs
                             </button>
                         </div>
@@ -251,30 +249,29 @@ class CronogramaApp {
         } else {
             const comp = this.data[this.currentCompany];
             const isMav = this.currentCompany === 'maverick';
-            const badgeColor = isMav ? 'bg-sky-500/20 text-sky-300 border-sky-500/40' : 'bg-amber-500/20 text-amber-300 border-amber-500/40';
-            const btnColor = isMav ? 'bg-sky-600 hover:bg-sky-500 shadow-sky-900/40' : 'bg-amber-600 hover:bg-amber-500 shadow-amber-900/40';
+            const gradClass = isMav ? 'bg-grad-cyan shadow-cyan-500/20' : 'bg-grad-amber shadow-amber-500/20';
 
             headerContainer.innerHTML = `
-                <div class="p-6 md:p-8 rounded-2xl glass-panel relative overflow-hidden bg-gradient-to-r ${comp.theme.heroGradient} border ${comp.theme.cardBorder}">
+                <div class="p-6 md:p-8 rounded-3xl minimal-panel relative overflow-hidden bg-white shadow-sm">
                     <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div>
                             <div class="flex flex-wrap items-center gap-2 mb-2">
-                                <span class="px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full ${badgeColor} border">${comp.badge}</span>
-                                <span class="text-xs text-slate-400 flex items-center gap-1"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-slate-300"></i> ${comp.location}</span>
+                                <span class="px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full ${comp.theme.lightBadge}">${comp.badge}</span>
+                                <span class="text-xs text-slate-500 flex items-center gap-1 font-medium"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-slate-400"></i> ${comp.location}</span>
                             </div>
-                            <h1 class="text-2xl md:text-3xl font-extrabold text-white tracking-tight">${comp.name}</h1>
-                            <p class="text-slate-300 font-medium italic text-sm mt-1">"${comp.tagline}"</p>
-                            <div class="flex flex-wrap items-center gap-4 mt-3 text-xs text-slate-300">
+                            <h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">${comp.name}</h1>
+                            <p class="text-slate-500 font-medium italic text-sm mt-1">"${comp.tagline}"</p>
+                            <div class="flex flex-wrap items-center gap-4 mt-3 text-xs text-slate-600">
                                 <span><strong>Contacto:</strong> ${comp.contact}</span>
                                 <span>•</span>
-                                <span><strong>Propietario / Encargado:</strong> ${comp.owner}</span>
+                                <span><strong>Responsable:</strong> ${comp.owner}</span>
                             </div>
                         </div>
                         <div class="flex flex-wrap gap-3 items-center">
-                            <a href="${comp.docFile}" download class="px-4 py-2.5 bg-slate-800/90 hover:bg-slate-700 text-slate-200 text-sm font-semibold rounded-xl transition border border-slate-700 flex items-center gap-2">
-                                <i data-lucide="download" class="w-4 h-4 text-slate-400"></i> Descargar DOCX Original
+                            <a href="${comp.docFile}" download class="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-bold rounded-2xl transition flex items-center gap-2">
+                                <i data-lucide="download" class="w-4 h-4 text-slate-500"></i> DOCX Original
                             </a>
-                            <button onclick="app.setView('brief')" class="px-4 py-2.5 ${btnColor} text-white text-sm font-semibold rounded-xl transition shadow-lg flex items-center gap-2">
+                            <button onclick="app.setView('brief')" class="px-5 py-3 ${gradClass} text-white text-xs sm:text-sm font-bold rounded-2xl shadow-lg transition hover:opacity-95 flex items-center gap-2">
                                 <i data-lucide="file-text" class="w-4 h-4"></i> Ver Brief Completo
                             </button>
                         </div>
@@ -298,64 +295,65 @@ class CronogramaApp {
         const pendientes = tasks.filter(t => t.status === 'pendiente').length;
         const pct = total > 0 ? Math.round((completadas / total) * 100) : 0;
 
+        // Clean Vibrant SaaS Cards like the screenshot reference!
         statsContainer.innerHTML = `
-            <!-- Progreso General -->
-            <div class="p-5 rounded-2xl glass-card border border-slate-800 relative overflow-hidden">
+            <!-- Card 1: Avance Global (Pink/Rose Gradient) -->
+            <div class="p-6 rounded-3xl bg-grad-pink text-white shadow-lg shadow-pink-500/15 relative overflow-hidden flex flex-col justify-between">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Avance Global</p>
-                        <h3 class="text-2xl md:text-3xl font-extrabold text-white mt-1">${pct}%</h3>
+                        <p class="text-xs font-bold uppercase tracking-wider text-pink-100">Avance General</p>
+                        <h3 class="text-3xl font-extrabold mt-1 text-white">${pct}%</h3>
                     </div>
-                    <div class="w-12 h-12 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                    <div class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-white">
                         <i data-lucide="trending-up" class="w-6 h-6"></i>
                     </div>
                 </div>
-                <div class="w-full bg-slate-800 h-2 rounded-full mt-4 overflow-hidden">
-                    <div class="bg-gradient-to-r from-emerald-500 to-teal-400 h-full rounded-full transition-all duration-500" style="width: ${pct}%"></div>
+                <div class="w-full bg-black/15 h-2 rounded-full mt-4 overflow-hidden">
+                    <div class="bg-white h-full rounded-full transition-all duration-500" style="width: ${pct}%"></div>
                 </div>
-                <p class="text-[11px] text-slate-400 mt-2">${completadas} de ${total} entregables finalizados</p>
+                <p class="text-xs text-pink-100 font-medium mt-2">${completadas} de ${total} tareas completadas</p>
             </div>
 
-            <!-- En Proceso -->
-            <div class="p-5 rounded-2xl glass-card border border-slate-800">
+            <!-- Card 2: En Proceso (Purple/Indigo Gradient) -->
+            <div class="p-6 rounded-3xl bg-grad-purple text-white shadow-lg shadow-purple-500/15 relative overflow-hidden flex flex-col justify-between">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-xs font-semibold text-amber-400 uppercase tracking-wider">En Proceso</p>
-                        <h3 class="text-2xl md:text-3xl font-extrabold text-white mt-1">${enProceso}</h3>
+                        <p class="text-xs font-bold uppercase tracking-wider text-purple-100">En Proceso</p>
+                        <h3 class="text-3xl font-extrabold mt-1 text-white">${enProceso}</h3>
                     </div>
-                    <div class="w-12 h-12 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400">
+                    <div class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-white">
                         <i data-lucide="clock" class="w-6 h-6"></i>
                     </div>
                 </div>
-                <p class="text-xs text-slate-400 mt-4">Tareas en desarrollo activo</p>
+                <p class="text-xs text-purple-100 font-medium mt-4">Actividades en desarrollo activo</p>
             </div>
 
-            <!-- En Revisión -->
-            <div class="p-5 rounded-2xl glass-card border border-slate-800">
+            <!-- Card 3: En Revisión (Cyan/Blue Gradient) -->
+            <div class="p-6 rounded-3xl bg-grad-cyan text-white shadow-lg shadow-cyan-500/15 relative overflow-hidden flex flex-col justify-between">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-xs font-semibold text-blue-400 uppercase tracking-wider">En Revisión</p>
-                        <h3 class="text-2xl md:text-3xl font-extrabold text-white mt-1">${enRevision}</h3>
+                        <p class="text-xs font-bold uppercase tracking-wider text-sky-100">En Revisión</p>
+                        <h3 class="text-3xl font-extrabold mt-1 text-white">${enRevision}</h3>
                     </div>
-                    <div class="w-12 h-12 rounded-xl bg-blue-500/20 border border-blue-500/30 flex items-center justify-center text-blue-400">
+                    <div class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-white">
                         <i data-lucide="eye" class="w-6 h-6"></i>
                     </div>
                 </div>
-                <p class="text-xs text-slate-400 mt-4">Listas para control de calidad</p>
+                <p class="text-xs text-sky-100 font-medium mt-4">Listas para control de calidad</p>
             </div>
 
-            <!-- Pendientes -->
-            <div class="p-5 rounded-2xl glass-card border border-slate-800">
+            <!-- Card 4: Pendientes (Amber/Orange Gradient) -->
+            <div class="p-6 rounded-3xl bg-grad-amber text-white shadow-lg shadow-amber-500/15 relative overflow-hidden flex flex-col justify-between">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Pendientes</p>
-                        <h3 class="text-2xl md:text-3xl font-extrabold text-white mt-1">${pendientes}</h3>
+                        <p class="text-xs font-bold uppercase tracking-wider text-amber-100">Pendientes</p>
+                        <h3 class="text-3xl font-extrabold mt-1 text-white">${pendientes}</h3>
                     </div>
-                    <div class="w-12 h-12 rounded-xl bg-slate-700/40 border border-slate-600/40 flex items-center justify-center text-slate-400">
+                    <div class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-white">
                         <i data-lucide="list-todo" class="w-6 h-6"></i>
                     </div>
                 </div>
-                <p class="text-xs text-slate-400 mt-4">Próximos sprints de trabajo</p>
+                <p class="text-xs text-amber-100 font-medium mt-4">Próximas entregas programadas</p>
             </div>
         `;
 
@@ -385,19 +383,18 @@ class CronogramaApp {
 
         if (tasks.length === 0) {
             container.innerHTML = `
-                <div class="p-12 text-center glass-panel rounded-2xl border border-slate-800">
-                    <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-slate-800 flex items-center justify-center text-slate-400">
+                <div class="p-12 text-center minimal-panel rounded-3xl bg-white">
+                    <div class="w-16 h-16 mx-auto mb-4 rounded-3xl bg-slate-100 flex items-center justify-center text-slate-400">
                         <i data-lucide="search-x" class="w-8 h-8"></i>
                     </div>
-                    <h3 class="text-lg font-bold text-white">No se encontraron tareas</h3>
+                    <h3 class="text-lg font-bold text-slate-800">No se encontraron tareas</h3>
                     <p class="text-sm text-slate-400 mt-1">Prueba cambiando los filtros de búsqueda o agrega una nueva tarea.</p>
                 </div>
             `;
             return;
         }
 
-        // Group tasks by phase
-        let html = '<div class="space-y-8">';
+        let html = '<div class="space-y-6">';
         
         PHASES.forEach(phase => {
             const phaseTasks = tasks.filter(t => t.phaseId === phase.id);
@@ -407,33 +404,34 @@ class CronogramaApp {
             const phasePct = Math.round((completedInPhase / phaseTasks.length) * 100);
 
             html += `
-                <div class="glass-panel rounded-2xl p-6 border border-slate-800">
+                <div class="minimal-panel rounded-3xl p-6 bg-white shadow-sm space-y-4">
+                    
                     <!-- Phase Header -->
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 mb-4 border-b border-slate-800">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-${phase.color}-500/20 text-${phase.color}-400 border border-${phase.color}-500/30 flex items-center justify-center font-bold">
+                            <div class="w-10 h-10 rounded-2xl ${phase.bg} flex items-center justify-center font-extrabold text-sm shadow-sm">
                                 ${phase.number}
                             </div>
                             <div>
-                                <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                                <h2 class="text-base sm:text-lg font-extrabold text-slate-900 flex items-center gap-2">
                                     ${phase.name}
                                 </h2>
-                                <p class="text-xs text-slate-400">${phaseTasks.length} tareas asignadas en esta fase</p>
+                                <p class="text-xs text-slate-400 font-medium">${phaseTasks.length} actividades programadas en esta fase</p>
                             </div>
                         </div>
                         <div class="flex items-center gap-3">
                             <div class="text-right">
-                                <span class="text-xs font-semibold text-slate-300">${completedInPhase}/${phaseTasks.length} Listas</span>
-                                <div class="w-32 bg-slate-800 h-2 rounded-full mt-1 overflow-hidden">
+                                <span class="text-xs font-bold text-slate-600">${completedInPhase}/${phaseTasks.length} Completadas (${phasePct}%)</span>
+                                <div class="w-32 bg-slate-100 h-2 rounded-full mt-1.5 overflow-hidden">
                                     <div class="bg-emerald-500 h-full rounded-full transition-all" style="width: ${phasePct}%"></div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Tasks Table / Cards -->
-                    <div class="space-y-4">
-                        ${phaseTasks.map(task => this.renderTaskCard(task)).join('')}
+                    <!-- Tasks Table / Rows -->
+                    <div class="space-y-3">
+                        ${phaseTasks.map(task => this.renderTaskRow(task)).join('')}
                     </div>
                 </div>
             `;
@@ -443,53 +441,52 @@ class CronogramaApp {
         container.innerHTML = html;
     }
 
-    renderTaskCard(task) {
-        const statusObj = TASK_STATUSES.find(s => s.id === task.status) || TASK_STATUSES[0];
+    renderTaskRow(task) {
         const assignedMember = TEAM_MEMBERS.find(m => m.name === task.assignedTo) || TEAM_MEMBERS[0];
         
-        let priorityColor = "bg-slate-700 text-slate-300";
-        if (task.priority === 'alta') priorityColor = "bg-rose-500/20 text-rose-300 border border-rose-500/30";
-        else if (task.priority === 'media') priorityColor = "bg-amber-500/20 text-amber-300 border border-amber-500/30";
+        let priorityColor = "bg-slate-100 text-slate-600";
+        if (task.priority === 'alta') priorityColor = "bg-rose-50 text-rose-600 font-bold";
+        else if (task.priority === 'media') priorityColor = "bg-amber-50 text-amber-600 font-bold";
 
         const companyBadge = task.companyName ? `
-            <span class="px-2 py-0.5 text-[10px] font-bold uppercase rounded bg-slate-800 text-slate-300 border border-slate-700">
+            <span class="px-2.5 py-1 text-[11px] font-bold rounded-lg bg-slate-100 text-slate-700">
                 ${task.companyName}
             </span>
         ` : '';
 
         return `
-            <div class="p-4 rounded-xl glass-card border border-slate-800 hover:border-slate-700 flex flex-col lg:flex-row lg:items-center justify-between gap-4" id="task-${task.id}">
+            <div class="p-4 rounded-2xl minimal-card bg-slate-50/70 hover:bg-white flex flex-col lg:flex-row lg:items-center justify-between gap-4 transition" id="task-${task.id}">
                 <div class="flex-1 space-y-2">
                     <div class="flex flex-wrap items-center gap-2">
                         ${companyBadge}
-                        <span class="px-2 py-0.5 text-[10px] font-bold uppercase rounded ${priorityColor}">
+                        <span class="px-2.5 py-0.5 text-[11px] font-bold rounded-full ${priorityColor}">
                             Prioridad ${task.priority || 'Normal'}
                         </span>
-                        <span class="text-xs text-slate-400 flex items-center gap-1">
-                            <i data-lucide="calendar" class="w-3.5 h-3.5 text-slate-500"></i> ${task.deadline || 'En curso'}
+                        <span class="text-xs text-slate-400 font-semibold flex items-center gap-1">
+                            <i data-lucide="calendar" class="w-3.5 h-3.5 text-slate-400"></i> ${task.deadline || 'En curso'}
                         </span>
                     </div>
 
-                    <h4 class="text-base font-bold text-white">${task.title}</h4>
-                    <p class="text-xs text-slate-300 leading-relaxed">${task.description}</p>
+                    <h4 class="text-sm font-bold text-slate-900">${task.title}</h4>
+                    <p class="text-xs text-slate-600 leading-relaxed">${task.description}</p>
                     
-                    <div class="p-2.5 rounded-lg bg-slate-900/80 border border-slate-800/80 flex items-start gap-2 mt-2">
-                        <i data-lucide="check-square" class="w-4 h-4 text-emerald-400 shrink-0 mt-0.5"></i>
+                    <div class="p-2.5 rounded-xl bg-white shadow-sm flex items-start gap-2 mt-2">
+                        <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-500 shrink-0 mt-0.5"></i>
                         <div class="text-xs">
-                            <strong class="text-slate-200">Entregable requerido:</strong>
-                            <span class="text-slate-300 ml-1">${task.deliverable}</span>
+                            <strong class="text-slate-800">Entregable:</strong>
+                            <span class="text-slate-600 ml-1 font-medium">${task.deliverable}</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Interactive Controls (Assignee & Status Dropdowns) -->
-                <div class="flex flex-wrap sm:flex-nowrap items-center gap-3 shrink-0 pt-2 lg:pt-0 border-t lg:border-t-0 border-slate-800">
+                <!-- Controls -->
+                <div class="flex flex-wrap sm:flex-nowrap items-center gap-3 shrink-0 pt-2 lg:pt-0 border-t lg:border-t-0 border-slate-200">
                     
                     <!-- Assignee Selector -->
                     <div class="w-full sm:w-auto">
                         <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Encargado</label>
                         <select onchange="app.updateTaskAssignee('${task.id}', this.value, '${task.companyId || this.currentCompany}')" 
-                                class="custom-select w-full sm:w-48 text-xs font-semibold bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-blue-500 transition">
+                                class="custom-select-light w-full sm:w-48 text-xs px-3 py-2">
                             ${TEAM_MEMBERS.map(m => `
                                 <option value="${m.name}" ${task.assignedTo === m.name ? 'selected' : ''}>
                                     ${m.name}
@@ -502,21 +499,21 @@ class CronogramaApp {
                     <div class="w-full sm:w-auto">
                         <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Estado</label>
                         <select onchange="app.updateTaskStatus('${task.id}', this.value, '${task.companyId || this.currentCompany}')" 
-                                class="custom-select w-full sm:w-40 text-xs font-bold rounded-lg px-3 py-2 focus:outline-none transition ${statusObj.color}">
+                                class="custom-select-light w-full sm:w-40 text-xs px-3 py-2 badge-${task.status}">
                             ${TASK_STATUSES.map(s => `
-                                <option value="${s.id}" class="bg-slate-900 text-white" ${task.status === s.id ? 'selected' : ''}>
+                                <option value="${s.id}" class="bg-white text-slate-800" ${task.status === s.id ? 'selected' : ''}>
                                     ${s.label}
                                 </option>
                             `).join('')}
                         </select>
                     </div>
 
-                    <!-- Actions (Edit/Delete) -->
+                    <!-- Action Buttons -->
                     <div class="flex items-center gap-1 self-end sm:self-center mt-3 sm:mt-4">
-                        <button onclick="app.openTaskModal('${task.id}', '${task.companyId || this.currentCompany}')" title="Editar Tarea" class="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition">
+                        <button onclick="app.openTaskModal('${task.id}', '${task.companyId || this.currentCompany}')" title="Editar Tarea" class="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-200 rounded-xl transition">
                             <i data-lucide="edit-3" class="w-4 h-4"></i>
                         </button>
-                        <button onclick="app.deleteTask('${task.id}', '${task.companyId || this.currentCompany}')" title="Eliminar Tarea" class="p-2 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition">
+                        <button onclick="app.deleteTask('${task.id}', '${task.companyId || this.currentCompany}')" title="Eliminar Tarea" class="p-2 text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition">
                             <i data-lucide="trash-2" class="w-4 h-4"></i>
                         </button>
                     </div>
@@ -535,14 +532,15 @@ class CronogramaApp {
                 ${TASK_STATUSES.map(status => {
                     const colTasks = tasks.filter(t => t.status === status.id);
                     return `
-                        <div class="glass-panel rounded-2xl p-4 border border-slate-800 flex flex-col h-full min-h-[600px]">
+                        <div class="minimal-panel rounded-3xl p-5 bg-white shadow-sm flex flex-col h-full min-h-[600px]">
+                            
                             <!-- Column Header -->
-                            <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-800">
+                            <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-100">
                                 <div class="flex items-center gap-2">
-                                    <span class="w-3 h-3 rounded-full ${status.color.split(' ')[0]}"></span>
-                                    <h3 class="font-bold text-sm text-white">${status.label}</h3>
+                                    <span class="w-3 h-3 rounded-full ${status.dot}"></span>
+                                    <h3 class="font-extrabold text-sm text-slate-800">${status.label}</h3>
                                 </div>
-                                <span class="px-2 py-0.5 text-xs font-bold rounded-full bg-slate-800 text-slate-300">
+                                <span class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-slate-100 text-slate-600">
                                     ${colTasks.length}
                                 </span>
                             </div>
@@ -550,7 +548,7 @@ class CronogramaApp {
                             <!-- Tasks list in column -->
                             <div class="space-y-3 flex-1 overflow-y-auto pr-1">
                                 ${colTasks.length === 0 ? `
-                                    <div class="p-6 text-center text-xs text-slate-500 border border-dashed border-slate-800 rounded-xl">
+                                    <div class="p-6 text-center text-xs text-slate-400 border border-dashed border-slate-200 rounded-2xl">
                                         Sin tareas en esta etapa
                                     </div>
                                 ` : colTasks.map(t => this.renderKanbanCard(t)).join('')}
@@ -567,27 +565,27 @@ class CronogramaApp {
         const phase = PHASES.find(p => p.id === task.phaseId) || PHASES[0];
 
         return `
-            <div class="p-4 rounded-xl glass-card border border-slate-800 hover:border-slate-600 transition space-y-3">
+            <div class="p-4 rounded-2xl minimal-card bg-slate-50/90 hover:bg-white shadow-sm space-y-3 transition">
                 <div class="flex items-center justify-between gap-2">
-                    <span class="px-2 py-0.5 text-[10px] font-bold uppercase rounded bg-${phase.color}-500/20 text-${phase.color}-300">
+                    <span class="px-2.5 py-0.5 text-[10px] font-bold uppercase rounded-lg ${phase.bg}">
                         ${phase.name}
                     </span>
-                    <span class="text-[11px] text-slate-400 font-mono">${task.deadline || ''}</span>
+                    <span class="text-[11px] text-slate-400 font-semibold">${task.deadline || ''}</span>
                 </div>
 
-                <h4 class="text-sm font-bold text-white line-clamp-2">${task.title}</h4>
-                <p class="text-xs text-slate-300 line-clamp-3">${task.description}</p>
+                <h4 class="text-sm font-bold text-slate-900 line-clamp-2">${task.title}</h4>
+                <p class="text-xs text-slate-500 line-clamp-3 leading-relaxed">${task.description}</p>
 
-                <div class="pt-2 border-t border-slate-800/80 flex items-center justify-between">
+                <div class="pt-3 border-t border-slate-200/60 flex items-center justify-between">
                     <div class="flex items-center gap-2">
-                        <div class="w-6 h-6 rounded-full ${assignedMember.color} text-[10px] font-bold text-white flex items-center justify-center">
+                        <div class="w-6 h-6 rounded-full ${assignedMember.color} text-[10px] font-bold flex items-center justify-center shadow-sm">
                             ${assignedMember.avatar}
                         </div>
-                        <span class="text-xs text-slate-300 font-medium truncate max-w-[110px]">${task.assignedTo.split(' ')[0]}</span>
+                        <span class="text-xs text-slate-600 font-bold truncate max-w-[100px]">${task.assignedTo.split(' ')[0]}</span>
                     </div>
 
                     <select onchange="app.updateTaskStatus('${task.id}', this.value, '${task.companyId || this.currentCompany}')" 
-                            class="custom-select text-[11px] font-semibold bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-slate-200">
+                            class="custom-select-light text-[11px] font-bold px-2 py-1 badge-${task.status}">
                         ${TASK_STATUSES.map(s => `
                             <option value="${s.id}" ${task.status === s.id ? 'selected' : ''}>
                                 ${s.label}
@@ -609,23 +607,23 @@ class CronogramaApp {
                 ${companiesToShow.map(key => {
                     const comp = this.data[key];
                     return `
-                        <div class="glass-panel rounded-2xl p-6 md:p-8 border border-slate-800 space-y-8">
+                        <div class="minimal-panel rounded-3xl p-6 md:p-8 bg-white shadow-sm space-y-8">
                             
                             <!-- Header Brief -->
-                            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-800">
+                            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-100">
                                 <div>
-                                    <span class="px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full bg-slate-800 text-slate-300 border border-slate-700">
-                                        Brief Estratégico de Identidad
+                                    <span class="px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full bg-slate-100 text-slate-700">
+                                        Ficha de Identidad & ADN
                                     </span>
-                                    <h2 class="text-2xl md:text-3xl font-extrabold text-white mt-2">${comp.name}</h2>
-                                    <p class="text-slate-400 text-sm mt-1">Ubicación: ${comp.location} | Contacto: ${comp.contact}</p>
+                                    <h2 class="text-2xl md:text-3xl font-extrabold text-slate-900 mt-2">${comp.name}</h2>
+                                    <p class="text-slate-500 text-sm mt-1">Ubicación: ${comp.location} | Contacto: ${comp.contact}</p>
                                 </div>
                                 <div class="flex flex-wrap gap-3">
-                                    <button onclick="app.downloadFormattedBrief('${key}')" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold rounded-xl transition shadow flex items-center gap-2">
-                                        <i data-lucide="file-text" class="w-4 h-4"></i> Descargar Ficha de Brief (.txt)
+                                    <button onclick="app.downloadFormattedBrief('${key}')" class="px-5 py-3 bg-grad-purple text-white text-xs sm:text-sm font-bold rounded-2xl shadow-lg shadow-purple-500/20 hover:opacity-95 transition flex items-center gap-2">
+                                        <i data-lucide="file-text" class="w-4 h-4"></i> Descargar Ficha (.txt)
                                     </button>
-                                    <a href="${comp.docFile}" download class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-semibold rounded-xl transition border border-slate-700 flex items-center gap-2">
-                                        <i data-lucide="download" class="w-4 h-4"></i> Descargar DOCX Original
+                                    <a href="${comp.docFile}" download class="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-bold rounded-2xl transition flex items-center gap-2">
+                                        <i data-lucide="download" class="w-4 h-4 text-slate-500"></i> DOCX Original
                                     </a>
                                 </div>
                             </div>
@@ -634,67 +632,67 @@ class CronogramaApp {
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 
                                 <!-- Historia y Propósito -->
-                                <div class="p-5 rounded-xl glass-card border border-slate-800 space-y-2">
-                                    <div class="flex items-center gap-2 text-sky-400 font-bold text-sm">
+                                <div class="p-6 rounded-2xl bg-slate-50/80 space-y-2">
+                                    <div class="flex items-center gap-2 text-sky-600 font-bold text-sm">
                                         <i data-lucide="history" class="w-4 h-4"></i> Historia & Origen
                                     </div>
-                                    <p class="text-xs text-slate-300 leading-relaxed">${comp.brief.summary}</p>
+                                    <p class="text-xs text-slate-600 leading-relaxed font-medium">${comp.brief.summary}</p>
                                 </div>
 
                                 <!-- Propuesta de Valor -->
-                                <div class="p-5 rounded-xl glass-card border border-slate-800 space-y-2">
-                                    <div class="flex items-center gap-2 text-amber-400 font-bold text-sm">
+                                <div class="p-6 rounded-2xl bg-slate-50/80 space-y-2">
+                                    <div class="flex items-center gap-2 text-amber-600 font-bold text-sm">
                                         <i data-lucide="award" class="w-4 h-4"></i> Propuesta de Valor
                                     </div>
-                                    <p class="text-xs text-slate-300 leading-relaxed">${comp.brief.valueProposition}</p>
+                                    <p class="text-xs text-slate-600 leading-relaxed font-medium">${comp.brief.valueProposition}</p>
                                 </div>
 
                                 <!-- Público Objetivo -->
-                                <div class="p-5 rounded-xl glass-card border border-slate-800 space-y-2">
-                                    <div class="flex items-center gap-2 text-purple-400 font-bold text-sm">
+                                <div class="p-6 rounded-2xl bg-slate-50/80 space-y-2">
+                                    <div class="flex items-center gap-2 text-purple-600 font-bold text-sm">
                                         <i data-lucide="users" class="w-4 h-4"></i> Cliente Ideal / Público
                                     </div>
-                                    <p class="text-xs text-slate-300 leading-relaxed">${comp.brief.targetAudience}</p>
+                                    <p class="text-xs text-slate-600 leading-relaxed font-medium">${comp.brief.targetAudience}</p>
                                 </div>
 
                                 <!-- Concepto de Logotipo -->
-                                <div class="p-5 rounded-xl glass-card border border-slate-800 space-y-2">
-                                    <div class="flex items-center gap-2 text-emerald-400 font-bold text-sm">
+                                <div class="p-6 rounded-2xl bg-slate-50/80 space-y-2">
+                                    <div class="flex items-center gap-2 text-emerald-600 font-bold text-sm">
                                         <i data-lucide="sparkles" class="w-4 h-4"></i> Concepto de Logotipo
                                     </div>
-                                    <p class="text-xs text-slate-300 leading-relaxed">${comp.brief.logoConcept}</p>
+                                    <p class="text-xs text-slate-600 leading-relaxed font-medium">${comp.brief.logoConcept}</p>
                                 </div>
 
                                 <!-- Paleta y Tipografía -->
-                                <div class="p-5 rounded-xl glass-card border border-slate-800 space-y-2">
-                                    <div class="flex items-center gap-2 text-rose-400 font-bold text-sm">
+                                <div class="p-6 rounded-2xl bg-slate-50/80 space-y-2">
+                                    <div class="flex items-center gap-2 text-rose-600 font-bold text-sm">
                                         <i data-lucide="palette" class="w-4 h-4"></i> Paleta & Estilo Visual
                                     </div>
-                                    <p class="text-xs text-slate-300 leading-relaxed">${comp.brief.colorPalette}</p>
-                                    <p class="text-xs text-slate-400 mt-2"><strong>Tipografía:</strong> ${comp.brief.typographyStyle}</p>
+                                    <p class="text-xs text-slate-600 leading-relaxed font-medium">${comp.brief.colorPalette}</p>
+                                    <p class="text-xs text-slate-500 mt-2 font-bold">Tipografía: <span class="font-normal text-slate-700">${comp.brief.typographyStyle}</span></p>
                                 </div>
 
                                 <!-- Productos Clave -->
-                                <div class="p-5 rounded-xl glass-card border border-slate-800 space-y-2">
-                                    <div class="flex items-center gap-2 text-teal-400 font-bold text-sm">
-                                        <i data-lucide="box" class="w-4 h-4"></i> Oferta de Productos Clave
+                                <div class="p-6 rounded-2xl bg-slate-50/80 space-y-2">
+                                    <div class="flex items-center gap-2 text-teal-600 font-bold text-sm">
+                                        <i data-lucide="box" class="w-4 h-4"></i> Productos Clave
                                     </div>
-                                    <ul class="text-xs text-slate-300 space-y-1">
-                                        ${comp.brief.keyProducts.map(p => `<li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i> ${p}</li>`).join('')}
+                                    <ul class="text-xs text-slate-600 space-y-1.5 font-medium">
+                                        ${comp.brief.keyProducts.map(p => `<li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500"></i> ${p}</li>`).join('')}
                                     </ul>
                                 </div>
 
                             </div>
 
-                            <!-- Puntos de Contacto y Aplicaciones -->
-                            <div class="p-5 rounded-xl bg-slate-900/60 border border-slate-800">
-                                <h4 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
-                                    <i data-lucide="layers" class="w-4 h-4 text-blue-400"></i> Puntos de Contacto y Aplicaciones Requeridas
+                            <!-- Puntos de Contacto -->
+                            <div class="p-6 rounded-2xl bg-slate-50/80">
+                                <h4 class="text-sm font-extrabold text-slate-900 mb-3 flex items-center gap-2">
+                                    <i data-lucide="layers" class="w-4 h-4 text-purple-600"></i> Puntos de Contacto y Aplicaciones Requeridas
                                 </h4>
                                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                                     ${comp.brief.applications.map(app => `
-                                        <div class="p-3 rounded-lg bg-slate-800/60 border border-slate-700/60 text-xs text-slate-200 flex items-center gap-2">
-                                            <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400"></i>
+                                        <div class="p-3 rounded-xl bg-white shadow-sm text-xs font-semibold text-slate-700 flex items-center gap-2">
+                                            <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-purple-500"></i>
                                             <span>${app}</span>
                                         </div>
                                     `).join('')}
@@ -712,7 +710,6 @@ class CronogramaApp {
     renderMetricsView(container) {
         const tasks = this.getTasks();
         
-        // Compute workload by member
         const memberStats = TEAM_MEMBERS.map(m => {
             const mTasks = tasks.filter(t => t.assignedTo === m.name);
             const done = mTasks.filter(t => t.status === 'completada').length;
@@ -725,49 +722,49 @@ class CronogramaApp {
 
         container.innerHTML = `
             <div class="space-y-8">
-                <div class="glass-panel rounded-2xl p-6 md:p-8 border border-slate-800">
-                    <h3 class="text-xl font-bold text-white mb-2">Distribución de Carga de Trabajo por Integrante</h3>
-                    <p class="text-xs text-slate-400 mb-6">Seguimiento individual del avance y responsabilidades de José Luis, Marcela y Ezequiel.</p>
+                <div class="minimal-panel rounded-3xl p-6 md:p-8 bg-white shadow-sm">
+                    <h3 class="text-xl font-extrabold text-slate-900 mb-2">Carga de Trabajo por Integrante</h3>
+                    <p class="text-xs text-slate-400 mb-6">Métricas de desempeño y avance individual de José Luis Vásquez, Marcela Castillo y Ezequiel Medrano.</p>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
                         ${memberStats.map(m => `
-                            <div class="p-5 rounded-xl glass-card border border-slate-800 space-y-4">
+                            <div class="p-6 rounded-2xl minimal-card bg-slate-50/90 hover:bg-white shadow-sm space-y-4">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-12 h-12 rounded-xl ${m.color} text-white font-extrabold text-sm flex items-center justify-center shadow">
+                                    <div class="w-12 h-12 rounded-2xl ${m.color} font-extrabold text-sm flex items-center justify-center shadow-md">
                                         ${m.avatar}
                                     </div>
                                     <div>
-                                        <h4 class="font-bold text-white text-sm">${m.name}</h4>
-                                        <p class="text-[11px] text-slate-400">${m.role}</p>
+                                        <h4 class="font-extrabold text-slate-900 text-sm">${m.name}</h4>
+                                        <p class="text-[11px] text-slate-500 font-semibold">${m.role}</p>
                                     </div>
                                 </div>
 
                                 <div class="space-y-1">
-                                    <div class="flex justify-between text-xs font-semibold">
-                                        <span class="text-slate-300">Avance Individual</span>
-                                        <span class="text-emerald-400">${m.pct}%</span>
+                                    <div class="flex justify-between text-xs font-bold">
+                                        <span class="text-slate-600">Avance Individual</span>
+                                        <span class="text-emerald-600">${m.pct}%</span>
                                     </div>
-                                    <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                                    <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
                                         <div class="bg-emerald-500 h-full rounded-full" style="width: ${m.pct}%"></div>
                                     </div>
                                 </div>
 
-                                <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-800 text-xs">
-                                    <div class="p-2 rounded-lg bg-slate-900/60">
-                                        <span class="text-slate-400 block text-[10px]">Total Tareas</span>
-                                        <strong class="text-white text-base">${m.total}</strong>
+                                <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-200 text-xs">
+                                    <div class="p-2.5 rounded-xl bg-white shadow-sm">
+                                        <span class="text-slate-400 block text-[10px] font-bold uppercase">Total</span>
+                                        <strong class="text-slate-900 text-base">${m.total}</strong>
                                     </div>
-                                    <div class="p-2 rounded-lg bg-slate-900/60">
-                                        <span class="text-slate-400 block text-[10px]">Completadas</span>
-                                        <strong class="text-emerald-400 text-base">${m.done}</strong>
+                                    <div class="p-2.5 rounded-xl bg-white shadow-sm">
+                                        <span class="text-slate-400 block text-[10px] font-bold uppercase">Completadas</span>
+                                        <strong class="text-emerald-600 text-base">${m.done}</strong>
                                     </div>
-                                    <div class="p-2 rounded-lg bg-slate-900/60">
-                                        <span class="text-slate-400 block text-[10px]">En Proceso</span>
-                                        <strong class="text-amber-400 text-base">${m.inProg}</strong>
+                                    <div class="p-2.5 rounded-xl bg-white shadow-sm">
+                                        <span class="text-slate-400 block text-[10px] font-bold uppercase">En Proceso</span>
+                                        <strong class="text-amber-600 text-base">${m.inProg}</strong>
                                     </div>
-                                    <div class="p-2 rounded-lg bg-slate-900/60">
-                                        <span class="text-slate-400 block text-[10px]">En Revisión</span>
-                                        <strong class="text-blue-400 text-base">${m.rev}</strong>
+                                    <div class="p-2.5 rounded-xl bg-white shadow-sm">
+                                        <span class="text-slate-400 block text-[10px] font-bold uppercase">En Revisión</span>
+                                        <strong class="text-blue-600 text-base">${m.rev}</strong>
                                     </div>
                                 </div>
                             </div>
@@ -776,27 +773,27 @@ class CronogramaApp {
                 </div>
 
                 <!-- Resumen de Fases -->
-                <div class="glass-panel rounded-2xl p-6 md:p-8 border border-slate-800">
-                    <h3 class="text-xl font-bold text-white mb-6">Estado de las 8 Fases del Proyecto</h3>
+                <div class="minimal-panel rounded-3xl p-6 md:p-8 bg-white shadow-sm">
+                    <h3 class="text-xl font-extrabold text-slate-900 mb-6">Estado de las 8 Fases del Proyecto</h3>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         ${PHASES.map(phase => {
                             const pTasks = tasks.filter(t => t.phaseId === phase.id);
                             const done = pTasks.filter(t => t.status === 'completada').length;
                             const pct = pTasks.length > 0 ? Math.round((done / pTasks.length) * 100) : 0;
                             return `
-                                <div class="p-4 rounded-xl glass-card border border-slate-800">
+                                <div class="p-4 rounded-2xl bg-slate-50/80 hover:bg-white shadow-sm transition">
                                     <div class="flex items-center gap-2 mb-2">
-                                        <span class="w-6 h-6 rounded-lg bg-${phase.color}-500/20 text-${phase.color}-400 text-xs font-bold flex items-center justify-center">
+                                        <span class="w-6 h-6 rounded-lg ${phase.bg} text-xs font-bold flex items-center justify-center">
                                             ${phase.number}
                                         </span>
-                                        <h5 class="text-xs font-bold text-white truncate">${phase.name}</h5>
+                                        <h5 class="text-xs font-bold text-slate-800 truncate">${phase.name}</h5>
                                     </div>
-                                    <div class="flex justify-between text-[11px] text-slate-400 mb-1">
+                                    <div class="flex justify-between text-[11px] text-slate-500 font-semibold mb-1">
                                         <span>${done}/${pTasks.length} tareas</span>
-                                        <span class="font-bold text-white">${pct}%</span>
+                                        <span class="font-bold text-slate-800">${pct}%</span>
                                     </div>
-                                    <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
-                                        <div class="bg-${phase.color}-500 h-full rounded-full" style="width: ${pct}%"></div>
+                                    <div class="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+                                        <div class="bg-emerald-500 h-full rounded-full" style="width: ${pct}%"></div>
                                     </div>
                                 </div>
                             `;
@@ -810,7 +807,6 @@ class CronogramaApp {
     // --- TASK UPDATES ---
     updateTaskStatus(taskId, newStatus, companyKey = this.currentCompany) {
         if (companyKey === 'all') {
-            // Find which company has this task
             Object.keys(this.data).forEach(k => {
                 const task = this.data[k].tasks.find(t => t.id === taskId);
                 if (task) task.status = newStatus;
@@ -823,7 +819,7 @@ class CronogramaApp {
         this.saveData();
         this.renderStats();
         this.renderContent();
-        this.showToast("Estado de tarea actualizado.", "success");
+        this.showToast("Estado actualizado.", "success");
     }
 
     updateTaskAssignee(taskId, newAssignee, companyKey = this.currentCompany) {
@@ -840,7 +836,7 @@ class CronogramaApp {
         this.saveData();
         this.renderStats();
         this.renderContent();
-        this.showToast(`Tarea reasignada a ${newAssignee}.`, "info");
+        this.showToast(`Asignado a ${newAssignee}.`, "info");
     }
 
     // --- MODAL HANDLING ---
@@ -854,7 +850,6 @@ class CronogramaApp {
         form.reset();
         document.getElementById('task-id').value = '';
 
-        // Populate company select
         const compSelect = document.getElementById('task-company');
         if (compSelect) {
             compSelect.value = companyKey === 'all' ? 'maverick' : companyKey;
@@ -869,7 +864,6 @@ class CronogramaApp {
                 task = this.data[targetCompany].tasks.find(t => t.id === taskId);
             }
             if (!task) {
-                // Search across all
                 Object.keys(this.data).forEach(k => {
                     const found = this.data[k].tasks.find(t => t.id === taskId);
                     if (found) {
@@ -920,7 +914,6 @@ class CronogramaApp {
         }
 
         if (id) {
-            // Edit existing task
             const task = this.data[compKey].tasks.find(t => t.id === id);
             if (task) {
                 task.title = title;
@@ -934,7 +927,6 @@ class CronogramaApp {
             }
             this.showToast("Tarea editada correctamente.", "success");
         } else {
-            // Create new task
             const newTask = {
                 id: 'custom-' + Date.now(),
                 title,
@@ -1029,13 +1021,13 @@ class CronogramaApp {
         });
 
         this.downloadFile(csv, `Cronograma_Manual_Marca_${Date.now()}.csv`, 'text/csv;charset=utf-8');
-        this.showToast("Cronograma exportado a CSV exitosamente.", "success");
+        this.showToast("Cronograma exportado a CSV.", "success");
     }
 
     exportToJSON() {
         const jsonStr = JSON.stringify(this.data, null, 2);
         this.downloadFile(jsonStr, `Cronograma_Backup_${Date.now()}.json`, 'application/json');
-        this.showToast("Copia de seguridad en JSON descargada.", "success");
+        this.showToast("Copia JSON descargada.", "success");
     }
 
     downloadFile(content, filename, type) {
@@ -1052,11 +1044,11 @@ class CronogramaApp {
 
     showToast(message, type = 'info') {
         const toast = document.createElement('div');
-        let bg = 'bg-slate-800 border-slate-700 text-white';
-        if (type === 'success') bg = 'bg-emerald-600 border-emerald-500 text-white';
-        else if (type === 'info') bg = 'bg-blue-600 border-blue-500 text-white';
+        let bg = 'bg-slate-800 text-white';
+        if (type === 'success') bg = 'bg-emerald-600 text-white';
+        else if (type === 'info') bg = 'bg-pink-600 text-white';
 
-        toast.className = `fixed bottom-6 right-6 z-50 px-4 py-3 rounded-xl border shadow-xl text-sm font-semibold flex items-center gap-2 transition-all transform duration-300 ${bg}`;
+        toast.className = `fixed bottom-6 right-6 z-50 px-5 py-3 rounded-2xl shadow-xl text-xs font-bold flex items-center gap-2 transition-all transform duration-300 ${bg}`;
         toast.innerHTML = `<i data-lucide="info" class="w-4 h-4"></i> ${message}`;
         document.body.appendChild(toast);
         
@@ -1070,7 +1062,6 @@ class CronogramaApp {
     }
 }
 
-// Global App instance
 let app;
 document.addEventListener('DOMContentLoaded', () => {
     app = new CronogramaApp();
