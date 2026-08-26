@@ -1,6 +1,6 @@
 /**
- * Main Application Logic - Cronograma Manual de Marca
- * Features: Dark/Light Mode Switcher, Distinctive Color Pill Dropdowns for Assignees & Statuses
+ * Main Application Logic - Cronograma Manual de Marca (With Firebase Realtime Sync)
+ * Artesanías Maverick & Variedades Franco
  */
 
 class CronogramaApp {
@@ -17,19 +17,21 @@ class CronogramaApp {
         };
         
         this.data = this.loadData();
+        this.sync = new FirebaseSyncService(this);
         this.init();
     }
 
     init() {
         this.applyTheme();
         this.bindEvents();
+        this.sync.init();
         this.render();
         if (window.lucide) {
             window.lucide.createIcons();
         }
     }
 
-    // --- THEME MANAGEMENT (DARK / LIGHT) ---
+    // --- THEME MANAGEMENT ---
     loadTheme() {
         const saved = localStorage.getItem('crono_theme_preference');
         if (saved) return saved;
@@ -76,10 +78,14 @@ class CronogramaApp {
 
     saveData() {
         localStorage.setItem('crono_brand_data_light_v4', JSON.stringify(this.data));
+        // Sync to cloud in real-time
+        if (this.sync) {
+            this.sync.syncToCloud(this.data);
+        }
     }
 
     resetData() {
-        if (confirm("¿Deseas restablecer todas las tareas al estado inicial predeterminado?")) {
+        if (confirm("¿Deseas restablecer todas las tareas al estado inicial predeterminado para todo el equipo?")) {
             this.data = JSON.parse(JSON.stringify(INITIAL_COMPANIES_DATA));
             this.saveData();
             this.render();
@@ -105,6 +111,12 @@ class CronogramaApp {
         const btnToggleTheme = document.getElementById('btn-toggle-theme');
         if (btnToggleTheme) {
             btnToggleTheme.addEventListener('click', () => this.toggleTheme());
+        }
+
+        // Firebase Cloud Config Modal button
+        const cloudBadge = document.getElementById('cloud-sync-badge');
+        if (cloudBadge) {
+            cloudBadge.addEventListener('click', () => this.openCloudModal());
         }
 
         // Company switcher tabs
@@ -188,6 +200,15 @@ class CronogramaApp {
             taskForm.addEventListener('submit', (e) => {
                 e.preventDefault();
                 this.handleTaskFormSubmit();
+            });
+        }
+
+        // Cloud Config Form Submit
+        const cloudForm = document.getElementById('cloud-form');
+        if (cloudForm) {
+            cloudForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.handleCloudFormSubmit();
             });
         }
     }
@@ -533,10 +554,10 @@ class CronogramaApp {
                     </div>
                 </div>
 
-                <!-- Interactive Color Controls (Encargado & Estado) -->
+                <!-- Color Pill Selectors -->
                 <div class="flex flex-wrap sm:flex-nowrap items-center gap-3 shrink-0 pt-2 lg:pt-0 border-t lg:border-t-0 border-slate-200 dark:border-slate-700">
                     
-                    <!-- Assignee Selector (Color Coded Pill) -->
+                    <!-- Assignee Selector -->
                     <div class="w-full sm:w-auto">
                         <label class="block text-[10px] font-extrabold uppercase text-slate-400 dark:text-slate-500 mb-1">Encargado</label>
                         <select onchange="app.updateTaskAssignee('${task.id}', this.value, '${task.companyId || this.currentCompany}', this)" 
@@ -549,7 +570,7 @@ class CronogramaApp {
                         </select>
                     </div>
 
-                    <!-- Status Selector (Color Coded Pill) -->
+                    <!-- Status Selector -->
                     <div class="w-full sm:w-auto">
                         <label class="block text-[10px] font-extrabold uppercase text-slate-400 dark:text-slate-500 mb-1">Estado</label>
                         <select onchange="app.updateTaskStatus('${task.id}', this.value, '${task.companyId || this.currentCompany}', this)" 
@@ -562,7 +583,7 @@ class CronogramaApp {
                         </select>
                     </div>
 
-                    <!-- Action Buttons -->
+                    <!-- Actions -->
                     <div class="flex items-center gap-1 self-end sm:self-center mt-3 sm:mt-4">
                         <button onclick="app.openTaskModal('${task.id}', '${task.companyId || this.currentCompany}')" title="Editar Tarea" class="p-2 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl transition">
                             <i data-lucide="edit-3" class="w-4 h-4"></i>
@@ -632,7 +653,6 @@ class CronogramaApp {
                 <h4 class="text-sm font-bold text-slate-900 dark:text-white line-clamp-2">${task.title}</h4>
                 <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-3 leading-relaxed">${task.description}</p>
 
-                <!-- Colored Assignee Pill & Status in Kanban -->
                 <div class="pt-3 border-t border-slate-200/60 dark:border-slate-700 flex items-center justify-between gap-2">
                     <span class="px-2 py-1 rounded-xl text-[11px] font-bold ${assigneeClass} truncate max-w-[120px]">
                         ${task.assignedTo.split(' ')[0]}
@@ -877,7 +897,7 @@ class CronogramaApp {
         this.saveData();
         this.renderStats();
         this.renderContent();
-        this.showToast("Estado actualizado.", "success");
+        this.showToast("Estado actualizado y sincronizado.", "success");
     }
 
     updateTaskAssignee(taskId, newAssignee, companyKey = this.currentCompany, selectElement = null) {
@@ -898,10 +918,49 @@ class CronogramaApp {
         this.saveData();
         this.renderStats();
         this.renderContent();
-        this.showToast(`Asignado a ${newAssignee}.`, "info");
+        this.showToast(`Asignado a ${newAssignee} (Sincronizado).`, "info");
     }
 
-    // --- MODAL HANDLING ---
+    // --- MODAL CLOUD CONFIG ---
+    openCloudModal() {
+        const modal = document.getElementById('cloud-modal');
+        const urlInput = document.getElementById('firebase-url');
+        const keyInput = document.getElementById('firebase-key');
+        
+        if (modal) {
+            if (this.sync.config) {
+                if (urlInput) urlInput.value = this.sync.config.databaseURL || '';
+                if (keyInput) keyInput.value = this.sync.config.apiKey || '';
+            }
+            modal.classList.remove('hidden');
+        }
+    }
+
+    closeCloudModal() {
+        const modal = document.getElementById('cloud-modal');
+        if (modal) modal.classList.add('hidden');
+    }
+
+    handleCloudFormSubmit() {
+        const url = document.getElementById('firebase-url').value.trim();
+        const apiKey = document.getElementById('firebase-key').value.trim();
+
+        if (!url) {
+            alert("Por favor ingresa la URL de tu Firebase Realtime Database.");
+            return;
+        }
+
+        const config = {
+            databaseURL: url,
+            apiKey: apiKey || "public-demo-key"
+        };
+
+        this.sync.saveConfig(config);
+        this.closeCloudModal();
+        this.showToast("Conexión con Firebase configurada.", "success");
+    }
+
+    // --- MODAL TASK HANDLING ---
     openTaskModal(taskId = null, companyKey = this.currentCompany) {
         const modal = document.getElementById('task-modal');
         const titleElem = document.getElementById('modal-title');
@@ -987,7 +1046,7 @@ class CronogramaApp {
                 task.description = description;
                 task.deliverable = deliverable;
             }
-            this.showToast("Tarea editada correctamente.", "success");
+            this.showToast("Tarea editada y sincronizada.", "success");
         } else {
             const newTask = {
                 id: 'custom-' + Date.now(),
@@ -1001,7 +1060,7 @@ class CronogramaApp {
                 deliverable
             };
             this.data[compKey].tasks.push(newTask);
-            this.showToast("Nueva tarea agregada al cronograma.", "success");
+            this.showToast("Nueva tarea creada y sincronizada.", "success");
         }
 
         this.saveData();
@@ -1011,7 +1070,7 @@ class CronogramaApp {
     }
 
     deleteTask(taskId, companyKey = this.currentCompany) {
-        if (!confirm("¿Deseas eliminar esta tarea del cronograma?")) return;
+        if (!confirm("¿Deseas eliminar esta tarea del cronograma para todo el equipo?")) return;
 
         if (companyKey === 'all') {
             Object.keys(this.data).forEach(k => {
