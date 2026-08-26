@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Light Minimalist Dashboard Design System (Inspired by Clean Modern SaaS)
+   Minimalist Dashboard Design System (Light & Dark Mode Support)
    ========================================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
@@ -8,22 +8,39 @@
     --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
     
-    /* Light Mode Color Palette */
+    /* Light Theme (Default) */
     --bg-app: #f4f6fb;
+    --bg-header: rgba(255, 255, 255, 0.92);
     --bg-card: #ffffff;
     --bg-card-subtle: #f8fafc;
+    --bg-card-inner: rgba(241, 245, 249, 0.7);
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #94a3b8;
+    --border-subtle: rgba(226, 232, 240, 0.8);
+    --nav-pill-bg: rgba(226, 232, 240, 0.75);
     
-    /* Accent Gradients */
-    --grad-pink-purple: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
-    --grad-maverick: linear-gradient(135deg, #0284c7 0%, #06b6d4 100%);
-    --grad-franco: linear-gradient(135deg, #d97706 0%, #ea580c 100%);
-    --grad-unified: linear-gradient(135deg, #8b5cf6 0%, #d946ef 100%);
-    
-    /* Shadows - Soft, Elegant, Minimalist (No harsh lines) */
-    --shadow-sm: 0 2px 8px -2px rgba(15, 23, 42, 0.04);
+    /* Shadows - Light */
     --shadow-card: 0 10px 25px -5px rgba(15, 23, 42, 0.04), 0 8px 10px -6px rgba(15, 23, 42, 0.02);
-    --shadow-hover: 0 20px 30px -10px rgba(15, 23, 42, 0.07), 0 10px 15px -5px rgba(15, 23, 42, 0.03);
-    --shadow-pill: 0 4px 14px 0 rgba(0, 0, 0, 0.06);
+    --shadow-hover: 0 20px 30px -10px rgba(15, 23, 42, 0.08), 0 10px 15px -5px rgba(15, 23, 42, 0.03);
+}
+
+/* Dark Mode Variables */
+html.dark {
+    --bg-app: #090d16;
+    --bg-header: rgba(9, 13, 22, 0.92);
+    --bg-card: #111726;
+    --bg-card-subtle: #172033;
+    --bg-card-inner: #1a243a;
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
+    --text-muted: #64748b;
+    --border-subtle: rgba(255, 255, 255, 0.06);
+    --nav-pill-bg: #172033;
+    
+    /* Shadows - Dark */
+    --shadow-card: 0 10px 30px -5px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+    --shadow-hover: 0 20px 35px -10px rgba(0, 0, 0, 0.6);
 }
 
 * {
@@ -33,9 +50,10 @@
 
 body {
     background-color: var(--bg-app);
-    color: #1e293b;
+    color: var(--text-primary);
     min-height: 100vh;
     overflow-x: hidden;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Custom Scrollbars */
@@ -44,17 +62,17 @@ body {
     height: 6px;
 }
 ::-webkit-scrollbar-track {
-    background: #f1f5f9;
+    background: transparent;
 }
 ::-webkit-scrollbar-thumb {
     background: #cbd5e1;
     border-radius: 9999px;
 }
-::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
+html.dark ::-webkit-scrollbar-thumb {
+    background: #334155;
 }
 
-/* Minimalist Clean Card without harsh border lines */
+/* Minimalist Clean Cards & Panels */
 .minimal-card {
     background: var(--bg-card);
     border-radius: 20px;
@@ -73,9 +91,10 @@ body {
     border-radius: 24px;
     box-shadow: var(--shadow-card);
     border: none;
+    transition: background-color 0.3s ease;
 }
 
-/* Gradient Pill & Banner Styles */
+/* Vibrant Gradient Classes (Stay beautiful in both Light and Dark) */
 .bg-grad-pink {
     background: linear-gradient(135deg, #f43f5e 0%, #ec4899 50%, #d946ef 100%);
 }
@@ -96,37 +115,185 @@ body {
     background: linear-gradient(135deg, #10b981 0%, #059669 100%);
 }
 
-/* Active Tab Styles (Light Pill Minimalist) */
+/* Active Tab Styles */
 .tab-active-maverick {
-    background: #ffffff !important;
+    background: var(--bg-card) !important;
     color: #0284c7 !important;
-    box-shadow: 0 4px 15px rgba(2, 132, 199, 0.15) !important;
+    box-shadow: 0 4px 15px rgba(2, 132, 199, 0.2) !important;
 }
 
 .tab-active-franco {
-    background: #ffffff !important;
+    background: var(--bg-card) !important;
     color: #ea580c !important;
-    box-shadow: 0 4px 15px rgba(234, 88, 12, 0.15) !important;
+    box-shadow: 0 4px 15px rgba(234, 88, 12, 0.2) !important;
 }
 
 .tab-active-unified {
-    background: #ffffff !important;
+    background: var(--bg-card) !important;
     color: #8b5cf6 !important;
-    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.15) !important;
+    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.2) !important;
 }
 
-/* Minimalist Custom Select */
-select.custom-select-light {
-    background-color: #f8fafc;
+/* ==========================================================================
+   COLOR IDENTIFIERS FOR ENCARGADOS (Drop-down Distinctive Colors)
+   ========================================================================== */
+.assignee-select {
     border: none;
     border-radius: 12px;
-    color: #334155;
-    font-weight: 600;
-    box-shadow: inset 0 0 0 1px #e2e8f0;
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2364748b' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    font-weight: 700;
+    font-size: 0.75rem;
+    padding: 0.5rem 2rem 0.5rem 0.75rem;
     background-position: right 0.5rem center;
     background-repeat: no-repeat;
-    background-size: 1.25em 1.25em;
+    background-size: 1.2em 1.2em;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* José Luis Vásquez (Blue Theme) */
+.assignee-jose {
+    background-color: #ebf5ff !important;
+    color: #1d4ed8 !important;
+    box-shadow: 0 2px 6px rgba(29, 78, 216, 0.12);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%231d4ed8' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+}
+html.dark .assignee-jose {
+    background-color: rgba(30, 58, 138, 0.4) !important;
+    color: #93c5fd !important;
+    box-shadow: 0 2px 8px rgba(30, 58, 138, 0.3);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2393c5fd' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+}
+
+/* Marcela Castillo (Rose / Magenta Theme) */
+.assignee-marcela {
+    background-color: #fff1f2 !important;
+    color: #e11d48 !important;
+    box-shadow: 0 2px 6px rgba(225, 29, 72, 0.12);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23e11d48' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+}
+html.dark .assignee-marcela {
+    background-color: rgba(136, 19, 55, 0.4) !important;
+    color: #fda4af !important;
+    box-shadow: 0 2px 8px rgba(136, 19, 55, 0.3);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23fda4af' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+}
+
+/* Ezequiel Medrano (Emerald / Green Theme) */
+.assignee-ezequiel {
+    background-color: #ecfdf5 !important;
+    color: #047857 !important;
+    box-shadow: 0 2px 6px rgba(4, 120, 87, 0.12);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23047857' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+}
+html.dark .assignee-ezequiel {
+    background-color: rgba(6, 78, 59, 0.4) !important;
+    color: #6ee7b7 !important;
+    box-shadow: 0 2px 8px rgba(6, 78, 59, 0.3);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236ee7b7' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+}
+
+/* Trabajo Grupal (Purple Theme) */
+.assignee-grupal {
+    background-color: #f5f3ff !important;
+    color: #7c3aed !important;
+    box-shadow: 0 2px 6px rgba(124, 58, 237, 0.12);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%237c3aed' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+}
+html.dark .assignee-grupal {
+    background-color: rgba(91, 33, 182, 0.4) !important;
+    color: #c4b5fd !important;
+    box-shadow: 0 2px 8px rgba(91, 33, 182, 0.3);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23c4b5fd' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+}
+
+/* ==========================================================================
+   COLOR IDENTIFIERS FOR ESTADOS (Drop-down Distinctive Status Colors)
+   ========================================================================== */
+.status-select {
+    border: none;
+    border-radius: 12px;
+    font-weight: 800;
+    font-size: 0.75rem;
+    padding: 0.5rem 2rem 0.5rem 0.75rem;
+    background-position: right 0.5rem center;
+    background-repeat: no-repeat;
+    background-size: 1.2em 1.2em;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* Pendiente (Neutral Slate) */
+.status-pendiente {
+    background-color: #f1f5f9 !important;
+    color: #475569 !important;
+    box-shadow: 0 2px 6px rgba(71, 85, 105, 0.1);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23475569' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+}
+html.dark .status-pendiente {
+    background-color: #1e293b !important;
+    color: #94a3b8 !important;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2394a3b8' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+}
+
+/* En Proceso (Warm Amber / Orange) */
+.status-en_proceso {
+    background-color: #fef3c7 !important;
+    color: #b45309 !important;
+    box-shadow: 0 2px 6px rgba(180, 83, 9, 0.15);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23b45309' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+}
+html.dark .status-en_proceso {
+    background-color: rgba(120, 53, 15, 0.45) !important;
+    color: #fcd34d !important;
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.2);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23fcd34d' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+}
+
+/* En Revisión (Vibrant Indigo / Blue) */
+.status-en_revision {
+    background-color: #dbeafe !important;
+    color: #1d4ed8 !important;
+    box-shadow: 0 2px 6px rgba(29, 78, 216, 0.15);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%231d4ed8' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+}
+html.dark .status-en_revision {
+    background-color: rgba(30, 58, 138, 0.45) !important;
+    color: #93c5fd !important;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2393c5fd' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+}
+
+/* Completada (Fresh Emerald / Green) */
+.status-completada {
+    background-color: #d1fae5 !important;
+    color: #065f46 !important;
+    box-shadow: 0 2px 6px rgba(6, 95, 70, 0.15);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23065f46' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+}
+html.dark .status-completada {
+    background-color: rgba(6, 78, 59, 0.45) !important;
+    color: #6ee7b7 !important;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236ee7b7' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+}
+
+/* Minimalist General Select */
+select.custom-select-light {
+    background-color: var(--bg-card-subtle);
+    border: none;
+    border-radius: 12px;
+    color: var(--text-primary);
+    font-weight: 600;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2394a3b8' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.5rem center;
+    background-repeat: no-repeat;
+    background-size: 1.2em 1.2em;
     padding-right: 2rem;
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -134,37 +301,10 @@ select.custom-select-light {
     transition: all 0.2s ease;
 }
 
-select.custom-select-light:focus {
-    box-shadow: inset 0 0 0 2px #ec4899;
-    outline: none;
-    background-color: #ffffff;
-}
-
-/* Status Badges */
-.badge-completada {
-    background-color: #ecfdf5;
-    color: #059669;
-}
-
-.badge-en_proceso {
-    background-color: #fffbeb;
-    color: #d97706;
-}
-
-.badge-en_revision {
-    background-color: #eff6ff;
-    color: #2563eb;
-}
-
-.badge-pendiente {
-    background-color: #f1f5f9;
-    color: #64748b;
-}
-
-/* Modal Animations */
-.modal-backdrop-light {
-    background: rgba(15, 23, 42, 0.4);
-    backdrop-filter: blur(6px);
+/* Modals */
+.modal-backdrop-custom {
+    background: rgba(4, 7, 15, 0.6);
+    backdrop-filter: blur(8px);
 }
 
 @keyframes modalPop {

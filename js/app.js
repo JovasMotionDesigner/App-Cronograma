@@ -1,12 +1,13 @@
 /**
- * Main Application Logic - Cronograma Manual de Marca (Light Minimalist Edition)
- * Artesanías Maverick & Variedades Franco
+ * Main Application Logic - Cronograma Manual de Marca
+ * Features: Dark/Light Mode Switcher, Distinctive Color Pill Dropdowns for Assignees & Statuses
  */
 
 class CronogramaApp {
     constructor() {
         this.currentCompany = 'maverick'; // 'maverick', 'franco', or 'all'
         this.currentView = 'list'; // 'list', 'kanban', 'brief', 'metrics'
+        this.theme = this.loadTheme();
         this.filters = {
             search: '',
             phase: 'all',
@@ -20,6 +21,7 @@ class CronogramaApp {
     }
 
     init() {
+        this.applyTheme();
         this.bindEvents();
         this.render();
         if (window.lucide) {
@@ -27,8 +29,41 @@ class CronogramaApp {
         }
     }
 
+    // --- THEME MANAGEMENT (DARK / LIGHT) ---
+    loadTheme() {
+        const saved = localStorage.getItem('crono_theme_preference');
+        if (saved) return saved;
+        return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+
+    applyTheme() {
+        const html = document.documentElement;
+        const themeIcon = document.getElementById('theme-icon');
+        const themeText = document.getElementById('theme-text');
+
+        if (this.theme === 'dark') {
+            html.classList.add('dark');
+            if (themeIcon) themeIcon.setAttribute('data-lucide', 'sun');
+            if (themeText) themeText.textContent = 'Modo Claro';
+        } else {
+            html.classList.remove('dark');
+            if (themeIcon) themeIcon.setAttribute('data-lucide', 'moon');
+            if (themeText) themeText.textContent = 'Modo Oscuro';
+        }
+
+        localStorage.setItem('crono_theme_preference', this.theme);
+        if (window.lucide) window.lucide.createIcons();
+    }
+
+    toggleTheme() {
+        this.theme = this.theme === 'dark' ? 'light' : 'dark';
+        this.applyTheme();
+        this.showToast(`Modo ${this.theme === 'dark' ? 'Oscuro' : 'Claro'} activado.`, "info");
+    }
+
+    // --- DATA MANAGEMENT ---
     loadData() {
-        const stored = localStorage.getItem('crono_brand_data_light_v3');
+        const stored = localStorage.getItem('crono_brand_data_light_v4');
         if (stored) {
             try {
                 return JSON.parse(stored);
@@ -40,7 +75,7 @@ class CronogramaApp {
     }
 
     saveData() {
-        localStorage.setItem('crono_brand_data_light_v3', JSON.stringify(this.data));
+        localStorage.setItem('crono_brand_data_light_v4', JSON.stringify(this.data));
     }
 
     resetData() {
@@ -52,7 +87,26 @@ class CronogramaApp {
         }
     }
 
+    // --- COLOR CLASS HELPERS ---
+    getAssigneeClass(name) {
+        if (!name) return 'assignee-jose';
+        if (name.includes('José') || name.includes('Jose')) return 'assignee-jose';
+        if (name.includes('Marcela')) return 'assignee-marcela';
+        if (name.includes('Ezequiel')) return 'assignee-ezequiel';
+        return 'assignee-grupal';
+    }
+
+    getStatusClass(status) {
+        return `status-${status || 'pendiente'}`;
+    }
+
     bindEvents() {
+        // Theme switcher button
+        const btnToggleTheme = document.getElementById('btn-toggle-theme');
+        if (btnToggleTheme) {
+            btnToggleTheme.addEventListener('click', () => this.toggleTheme());
+        }
+
         // Company switcher tabs
         document.querySelectorAll('[data-company-tab]').forEach(btn => {
             btn.addEventListener('click', (e) => {
@@ -151,9 +205,9 @@ class CronogramaApp {
         document.querySelectorAll('[data-view-tab]').forEach(btn => {
             const isTarget = btn.getAttribute('data-view-tab') === viewId;
             if (isTarget) {
-                btn.className = "px-4 py-2 text-xs sm:text-sm font-bold rounded-xl bg-white text-slate-800 shadow-sm flex items-center gap-2";
+                btn.className = "px-4 py-2 text-xs sm:text-sm font-extrabold rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm flex items-center gap-2";
             } else {
-                btn.className = "px-4 py-2 text-xs sm:text-sm font-semibold rounded-xl text-slate-500 hover:text-slate-900 hover:bg-white/50 flex items-center gap-2 transition";
+                btn.className = "px-4 py-2 text-xs sm:text-sm font-semibold rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white/50 dark:hover:bg-slate-800/50 flex items-center gap-2 transition";
             }
         });
         this.renderContent();
@@ -169,14 +223,14 @@ class CronogramaApp {
     renderTabs() {
         document.querySelectorAll('[data-company-tab]').forEach(btn => {
             const comp = btn.getAttribute('data-company-tab');
-            btn.classList.remove('tab-active-maverick', 'tab-active-franco', 'tab-active-unified', 'text-slate-500', 'bg-transparent');
+            btn.classList.remove('tab-active-maverick', 'tab-active-franco', 'tab-active-unified', 'text-slate-500', 'dark:text-slate-400', 'bg-transparent');
             
             if (comp === this.currentCompany) {
                 if (comp === 'maverick') btn.classList.add('tab-active-maverick');
                 else if (comp === 'franco') btn.classList.add('tab-active-franco');
                 else btn.classList.add('tab-active-unified');
             } else {
-                btn.classList.add('text-slate-500', 'bg-transparent');
+                btn.classList.add('text-slate-500', 'dark:text-slate-400', 'bg-transparent');
             }
         });
     }
@@ -226,15 +280,15 @@ class CronogramaApp {
 
         if (this.currentCompany === 'all') {
             headerContainer.innerHTML = `
-                <div class="p-6 md:p-8 rounded-3xl minimal-panel relative overflow-hidden bg-white shadow-sm">
+                <div class="p-6 md:p-8 rounded-3xl minimal-panel relative overflow-hidden bg-white dark:bg-slate-900 shadow-sm">
                     <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div>
                             <div class="flex items-center gap-2 mb-2">
-                                <span class="px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full bg-purple-50 text-purple-700">Vista Global Unificada</span>
-                                <span class="px-3 py-1 text-xs font-semibold rounded-full bg-slate-100 text-slate-600">2 Empresas Salvadoreñas</span>
+                                <span class="px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full bg-purple-50 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300">Vista Global Unificada</span>
+                                <span class="px-3 py-1 text-xs font-semibold rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">2 Empresas Salvadoreñas</span>
                             </div>
-                            <h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">Cronograma de Identidad: Artesanías Maverick & Variedades Franco</h1>
-                            <p class="text-slate-500 mt-2 max-w-3xl text-sm leading-relaxed">
+                            <h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Cronograma de Identidad: Artesanías Maverick & Variedades Franco</h1>
+                            <p class="text-slate-500 dark:text-slate-400 mt-2 max-w-3xl text-sm leading-relaxed">
                                 Planificación, seguimiento colaborativo y control de entregables para la elaboración del manual de marca de ambas empresas del Mercado Sagrado Corazón.
                             </p>
                         </div>
@@ -252,24 +306,24 @@ class CronogramaApp {
             const gradClass = isMav ? 'bg-grad-cyan shadow-cyan-500/20' : 'bg-grad-amber shadow-amber-500/20';
 
             headerContainer.innerHTML = `
-                <div class="p-6 md:p-8 rounded-3xl minimal-panel relative overflow-hidden bg-white shadow-sm">
+                <div class="p-6 md:p-8 rounded-3xl minimal-panel relative overflow-hidden bg-white dark:bg-slate-900 shadow-sm">
                     <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div>
                             <div class="flex flex-wrap items-center gap-2 mb-2">
-                                <span class="px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full ${comp.theme.lightBadge}">${comp.badge}</span>
-                                <span class="text-xs text-slate-500 flex items-center gap-1 font-medium"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-slate-400"></i> ${comp.location}</span>
+                                <span class="px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full ${comp.theme.lightBadge} dark:bg-slate-800 dark:text-slate-200">${comp.badge}</span>
+                                <span class="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1 font-medium"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-slate-400"></i> ${comp.location}</span>
                             </div>
-                            <h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">${comp.name}</h1>
-                            <p class="text-slate-500 font-medium italic text-sm mt-1">"${comp.tagline}"</p>
-                            <div class="flex flex-wrap items-center gap-4 mt-3 text-xs text-slate-600">
+                            <h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">${comp.name}</h1>
+                            <p class="text-slate-500 dark:text-slate-400 font-medium italic text-sm mt-1">"${comp.tagline}"</p>
+                            <div class="flex flex-wrap items-center gap-4 mt-3 text-xs text-slate-600 dark:text-slate-300">
                                 <span><strong>Contacto:</strong> ${comp.contact}</span>
                                 <span>•</span>
                                 <span><strong>Responsable:</strong> ${comp.owner}</span>
                             </div>
                         </div>
                         <div class="flex flex-wrap gap-3 items-center">
-                            <a href="${comp.docFile}" download class="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-bold rounded-2xl transition flex items-center gap-2">
-                                <i data-lucide="download" class="w-4 h-4 text-slate-500"></i> DOCX Original
+                            <a href="${comp.docFile}" download class="px-4 py-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs sm:text-sm font-bold rounded-2xl transition flex items-center gap-2">
+                                <i data-lucide="download" class="w-4 h-4 text-slate-400"></i> DOCX Original
                             </a>
                             <button onclick="app.setView('brief')" class="px-5 py-3 ${gradClass} text-white text-xs sm:text-sm font-bold rounded-2xl shadow-lg transition hover:opacity-95 flex items-center gap-2">
                                 <i data-lucide="file-text" class="w-4 h-4"></i> Ver Brief Completo
@@ -295,9 +349,8 @@ class CronogramaApp {
         const pendientes = tasks.filter(t => t.status === 'pendiente').length;
         const pct = total > 0 ? Math.round((completadas / total) * 100) : 0;
 
-        // Clean Vibrant SaaS Cards like the screenshot reference!
         statsContainer.innerHTML = `
-            <!-- Card 1: Avance Global (Pink/Rose Gradient) -->
+            <!-- Card 1: Avance General (Pink/Rose Gradient) -->
             <div class="p-6 rounded-3xl bg-grad-pink text-white shadow-lg shadow-pink-500/15 relative overflow-hidden flex flex-col justify-between">
                 <div class="flex items-center justify-between">
                     <div>
@@ -383,11 +436,11 @@ class CronogramaApp {
 
         if (tasks.length === 0) {
             container.innerHTML = `
-                <div class="p-12 text-center minimal-panel rounded-3xl bg-white">
-                    <div class="w-16 h-16 mx-auto mb-4 rounded-3xl bg-slate-100 flex items-center justify-center text-slate-400">
+                <div class="p-12 text-center minimal-panel rounded-3xl bg-white dark:bg-slate-900">
+                    <div class="w-16 h-16 mx-auto mb-4 rounded-3xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400">
                         <i data-lucide="search-x" class="w-8 h-8"></i>
                     </div>
-                    <h3 class="text-lg font-bold text-slate-800">No se encontraron tareas</h3>
+                    <h3 class="text-lg font-bold text-slate-800 dark:text-white">No se encontraron tareas</h3>
                     <p class="text-sm text-slate-400 mt-1">Prueba cambiando los filtros de búsqueda o agrega una nueva tarea.</p>
                 </div>
             `;
@@ -404,16 +457,16 @@ class CronogramaApp {
             const phasePct = Math.round((completedInPhase / phaseTasks.length) * 100);
 
             html += `
-                <div class="minimal-panel rounded-3xl p-6 bg-white shadow-sm space-y-4">
+                <div class="minimal-panel rounded-3xl p-6 bg-white dark:bg-slate-900 shadow-sm space-y-4">
                     
                     <!-- Phase Header -->
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100 dark:border-slate-800">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-2xl ${phase.bg} flex items-center justify-center font-extrabold text-sm shadow-sm">
+                            <div class="w-10 h-10 rounded-2xl ${phase.bg} dark:bg-slate-800 dark:text-slate-200 flex items-center justify-center font-extrabold text-sm shadow-sm">
                                 ${phase.number}
                             </div>
                             <div>
-                                <h2 class="text-base sm:text-lg font-extrabold text-slate-900 flex items-center gap-2">
+                                <h2 class="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
                                     ${phase.name}
                                 </h2>
                                 <p class="text-xs text-slate-400 font-medium">${phaseTasks.length} actividades programadas en esta fase</p>
@@ -421,8 +474,8 @@ class CronogramaApp {
                         </div>
                         <div class="flex items-center gap-3">
                             <div class="text-right">
-                                <span class="text-xs font-bold text-slate-600">${completedInPhase}/${phaseTasks.length} Completadas (${phasePct}%)</span>
-                                <div class="w-32 bg-slate-100 h-2 rounded-full mt-1.5 overflow-hidden">
+                                <span class="text-xs font-bold text-slate-600 dark:text-slate-300">${completedInPhase}/${phaseTasks.length} Completadas (${phasePct}%)</span>
+                                <div class="w-32 bg-slate-100 dark:bg-slate-800 h-2 rounded-full mt-1.5 overflow-hidden">
                                     <div class="bg-emerald-500 h-full rounded-full transition-all" style="width: ${phasePct}%"></div>
                                 </div>
                             </div>
@@ -442,20 +495,21 @@ class CronogramaApp {
     }
 
     renderTaskRow(task) {
-        const assignedMember = TEAM_MEMBERS.find(m => m.name === task.assignedTo) || TEAM_MEMBERS[0];
-        
-        let priorityColor = "bg-slate-100 text-slate-600";
-        if (task.priority === 'alta') priorityColor = "bg-rose-50 text-rose-600 font-bold";
-        else if (task.priority === 'media') priorityColor = "bg-amber-50 text-amber-600 font-bold";
+        let priorityColor = "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300";
+        if (task.priority === 'alta') priorityColor = "bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-300 font-bold";
+        else if (task.priority === 'media') priorityColor = "bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-300 font-bold";
 
         const companyBadge = task.companyName ? `
-            <span class="px-2.5 py-1 text-[11px] font-bold rounded-lg bg-slate-100 text-slate-700">
+            <span class="px-2.5 py-1 text-[11px] font-bold rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200">
                 ${task.companyName}
             </span>
         ` : '';
 
+        const assigneeClass = this.getAssigneeClass(task.assignedTo);
+        const statusClass = this.getStatusClass(task.status);
+
         return `
-            <div class="p-4 rounded-2xl minimal-card bg-slate-50/70 hover:bg-white flex flex-col lg:flex-row lg:items-center justify-between gap-4 transition" id="task-${task.id}">
+            <div class="p-4 rounded-2xl minimal-card bg-slate-50/70 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800 flex flex-col lg:flex-row lg:items-center justify-between gap-4 transition" id="task-${task.id}">
                 <div class="flex-1 space-y-2">
                     <div class="flex flex-wrap items-center gap-2">
                         ${companyBadge}
@@ -467,41 +521,41 @@ class CronogramaApp {
                         </span>
                     </div>
 
-                    <h4 class="text-sm font-bold text-slate-900">${task.title}</h4>
-                    <p class="text-xs text-slate-600 leading-relaxed">${task.description}</p>
+                    <h4 class="text-sm font-bold text-slate-900 dark:text-white">${task.title}</h4>
+                    <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">${task.description}</p>
                     
-                    <div class="p-2.5 rounded-xl bg-white shadow-sm flex items-start gap-2 mt-2">
+                    <div class="p-2.5 rounded-xl bg-white dark:bg-slate-900 shadow-sm flex items-start gap-2 mt-2">
                         <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-500 shrink-0 mt-0.5"></i>
                         <div class="text-xs">
-                            <strong class="text-slate-800">Entregable:</strong>
-                            <span class="text-slate-600 ml-1 font-medium">${task.deliverable}</span>
+                            <strong class="text-slate-800 dark:text-slate-200">Entregable:</strong>
+                            <span class="text-slate-600 dark:text-slate-400 ml-1 font-medium">${task.deliverable}</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Controls -->
-                <div class="flex flex-wrap sm:flex-nowrap items-center gap-3 shrink-0 pt-2 lg:pt-0 border-t lg:border-t-0 border-slate-200">
+                <!-- Interactive Color Controls (Encargado & Estado) -->
+                <div class="flex flex-wrap sm:flex-nowrap items-center gap-3 shrink-0 pt-2 lg:pt-0 border-t lg:border-t-0 border-slate-200 dark:border-slate-700">
                     
-                    <!-- Assignee Selector -->
+                    <!-- Assignee Selector (Color Coded Pill) -->
                     <div class="w-full sm:w-auto">
-                        <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Encargado</label>
-                        <select onchange="app.updateTaskAssignee('${task.id}', this.value, '${task.companyId || this.currentCompany}')" 
-                                class="custom-select-light w-full sm:w-48 text-xs px-3 py-2">
+                        <label class="block text-[10px] font-extrabold uppercase text-slate-400 dark:text-slate-500 mb-1">Encargado</label>
+                        <select onchange="app.updateTaskAssignee('${task.id}', this.value, '${task.companyId || this.currentCompany}', this)" 
+                                class="assignee-select w-full sm:w-48 ${assigneeClass}">
                             ${TEAM_MEMBERS.map(m => `
-                                <option value="${m.name}" ${task.assignedTo === m.name ? 'selected' : ''}>
+                                <option value="${m.name}" class="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100" ${task.assignedTo === m.name ? 'selected' : ''}>
                                     ${m.name}
                                 </option>
                             `).join('')}
                         </select>
                     </div>
 
-                    <!-- Status Selector -->
+                    <!-- Status Selector (Color Coded Pill) -->
                     <div class="w-full sm:w-auto">
-                        <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Estado</label>
-                        <select onchange="app.updateTaskStatus('${task.id}', this.value, '${task.companyId || this.currentCompany}')" 
-                                class="custom-select-light w-full sm:w-40 text-xs px-3 py-2 badge-${task.status}">
+                        <label class="block text-[10px] font-extrabold uppercase text-slate-400 dark:text-slate-500 mb-1">Estado</label>
+                        <select onchange="app.updateTaskStatus('${task.id}', this.value, '${task.companyId || this.currentCompany}', this)" 
+                                class="status-select w-full sm:w-40 ${statusClass}">
                             ${TASK_STATUSES.map(s => `
-                                <option value="${s.id}" class="bg-white text-slate-800" ${task.status === s.id ? 'selected' : ''}>
+                                <option value="${s.id}" class="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100" ${task.status === s.id ? 'selected' : ''}>
                                     ${s.label}
                                 </option>
                             `).join('')}
@@ -510,10 +564,10 @@ class CronogramaApp {
 
                     <!-- Action Buttons -->
                     <div class="flex items-center gap-1 self-end sm:self-center mt-3 sm:mt-4">
-                        <button onclick="app.openTaskModal('${task.id}', '${task.companyId || this.currentCompany}')" title="Editar Tarea" class="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-200 rounded-xl transition">
+                        <button onclick="app.openTaskModal('${task.id}', '${task.companyId || this.currentCompany}')" title="Editar Tarea" class="p-2 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl transition">
                             <i data-lucide="edit-3" class="w-4 h-4"></i>
                         </button>
-                        <button onclick="app.deleteTask('${task.id}', '${task.companyId || this.currentCompany}')" title="Eliminar Tarea" class="p-2 text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition">
+                        <button onclick="app.deleteTask('${task.id}', '${task.companyId || this.currentCompany}')" title="Eliminar Tarea" class="p-2 text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-xl transition">
                             <i data-lucide="trash-2" class="w-4 h-4"></i>
                         </button>
                     </div>
@@ -532,15 +586,15 @@ class CronogramaApp {
                 ${TASK_STATUSES.map(status => {
                     const colTasks = tasks.filter(t => t.status === status.id);
                     return `
-                        <div class="minimal-panel rounded-3xl p-5 bg-white shadow-sm flex flex-col h-full min-h-[600px]">
+                        <div class="minimal-panel rounded-3xl p-5 bg-white dark:bg-slate-900 shadow-sm flex flex-col h-full min-h-[600px]">
                             
                             <!-- Column Header -->
-                            <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-100">
+                            <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-100 dark:border-slate-800">
                                 <div class="flex items-center gap-2">
                                     <span class="w-3 h-3 rounded-full ${status.dot}"></span>
-                                    <h3 class="font-extrabold text-sm text-slate-800">${status.label}</h3>
+                                    <h3 class="font-extrabold text-sm text-slate-800 dark:text-white">${status.label}</h3>
                                 </div>
-                                <span class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-slate-100 text-slate-600">
+                                <span class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
                                     ${colTasks.length}
                                 </span>
                             </div>
@@ -548,7 +602,7 @@ class CronogramaApp {
                             <!-- Tasks list in column -->
                             <div class="space-y-3 flex-1 overflow-y-auto pr-1">
                                 ${colTasks.length === 0 ? `
-                                    <div class="p-6 text-center text-xs text-slate-400 border border-dashed border-slate-200 rounded-2xl">
+                                    <div class="p-6 text-center text-xs text-slate-400 border border-dashed border-slate-200 dark:border-slate-800 rounded-2xl">
                                         Sin tareas en esta etapa
                                     </div>
                                 ` : colTasks.map(t => this.renderKanbanCard(t)).join('')}
@@ -563,31 +617,31 @@ class CronogramaApp {
     renderKanbanCard(task) {
         const assignedMember = TEAM_MEMBERS.find(m => m.name === task.assignedTo) || TEAM_MEMBERS[0];
         const phase = PHASES.find(p => p.id === task.phaseId) || PHASES[0];
+        const statusClass = this.getStatusClass(task.status);
+        const assigneeClass = this.getAssigneeClass(task.assignedTo);
 
         return `
-            <div class="p-4 rounded-2xl minimal-card bg-slate-50/90 hover:bg-white shadow-sm space-y-3 transition">
+            <div class="p-4 rounded-2xl minimal-card bg-slate-50/90 dark:bg-slate-800/60 hover:bg-white dark:hover:bg-slate-800 shadow-sm space-y-3 transition">
                 <div class="flex items-center justify-between gap-2">
-                    <span class="px-2.5 py-0.5 text-[10px] font-bold uppercase rounded-lg ${phase.bg}">
+                    <span class="px-2.5 py-0.5 text-[10px] font-bold uppercase rounded-lg ${phase.bg} dark:bg-slate-700 dark:text-slate-200">
                         ${phase.name}
                     </span>
                     <span class="text-[11px] text-slate-400 font-semibold">${task.deadline || ''}</span>
                 </div>
 
-                <h4 class="text-sm font-bold text-slate-900 line-clamp-2">${task.title}</h4>
-                <p class="text-xs text-slate-500 line-clamp-3 leading-relaxed">${task.description}</p>
+                <h4 class="text-sm font-bold text-slate-900 dark:text-white line-clamp-2">${task.title}</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-3 leading-relaxed">${task.description}</p>
 
-                <div class="pt-3 border-t border-slate-200/60 flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                        <div class="w-6 h-6 rounded-full ${assignedMember.color} text-[10px] font-bold flex items-center justify-center shadow-sm">
-                            ${assignedMember.avatar}
-                        </div>
-                        <span class="text-xs text-slate-600 font-bold truncate max-w-[100px]">${task.assignedTo.split(' ')[0]}</span>
-                    </div>
+                <!-- Colored Assignee Pill & Status in Kanban -->
+                <div class="pt-3 border-t border-slate-200/60 dark:border-slate-700 flex items-center justify-between gap-2">
+                    <span class="px-2 py-1 rounded-xl text-[11px] font-bold ${assigneeClass} truncate max-w-[120px]">
+                        ${task.assignedTo.split(' ')[0]}
+                    </span>
 
-                    <select onchange="app.updateTaskStatus('${task.id}', this.value, '${task.companyId || this.currentCompany}')" 
-                            class="custom-select-light text-[11px] font-bold px-2 py-1 badge-${task.status}">
+                    <select onchange="app.updateTaskStatus('${task.id}', this.value, '${task.companyId || this.currentCompany}', this)" 
+                            class="status-select text-[11px] font-bold px-2 py-1 ${statusClass}">
                         ${TASK_STATUSES.map(s => `
-                            <option value="${s.id}" ${task.status === s.id ? 'selected' : ''}>
+                            <option value="${s.id}" class="bg-white dark:bg-slate-900 text-slate-900 dark:text-white" ${task.status === s.id ? 'selected' : ''}>
                                 ${s.label}
                             </option>
                         `).join('')}
@@ -607,23 +661,23 @@ class CronogramaApp {
                 ${companiesToShow.map(key => {
                     const comp = this.data[key];
                     return `
-                        <div class="minimal-panel rounded-3xl p-6 md:p-8 bg-white shadow-sm space-y-8">
+                        <div class="minimal-panel rounded-3xl p-6 md:p-8 bg-white dark:bg-slate-900 shadow-sm space-y-8">
                             
                             <!-- Header Brief -->
-                            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-100">
+                            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-100 dark:border-slate-800">
                                 <div>
-                                    <span class="px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full bg-slate-100 text-slate-700">
+                                    <span class="px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
                                         Ficha de Identidad & ADN
                                     </span>
-                                    <h2 class="text-2xl md:text-3xl font-extrabold text-slate-900 mt-2">${comp.name}</h2>
-                                    <p class="text-slate-500 text-sm mt-1">Ubicación: ${comp.location} | Contacto: ${comp.contact}</p>
+                                    <h2 class="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white mt-2">${comp.name}</h2>
+                                    <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Ubicación: ${comp.location} | Contacto: ${comp.contact}</p>
                                 </div>
                                 <div class="flex flex-wrap gap-3">
                                     <button onclick="app.downloadFormattedBrief('${key}')" class="px-5 py-3 bg-grad-purple text-white text-xs sm:text-sm font-bold rounded-2xl shadow-lg shadow-purple-500/20 hover:opacity-95 transition flex items-center gap-2">
                                         <i data-lucide="file-text" class="w-4 h-4"></i> Descargar Ficha (.txt)
                                     </button>
-                                    <a href="${comp.docFile}" download class="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-bold rounded-2xl transition flex items-center gap-2">
-                                        <i data-lucide="download" class="w-4 h-4 text-slate-500"></i> DOCX Original
+                                    <a href="${comp.docFile}" download class="px-4 py-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs sm:text-sm font-bold rounded-2xl transition flex items-center gap-2">
+                                        <i data-lucide="download" class="w-4 h-4 text-slate-400"></i> DOCX Original
                                     </a>
                                 </div>
                             </div>
@@ -632,52 +686,52 @@ class CronogramaApp {
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 
                                 <!-- Historia y Propósito -->
-                                <div class="p-6 rounded-2xl bg-slate-50/80 space-y-2">
-                                    <div class="flex items-center gap-2 text-sky-600 font-bold text-sm">
+                                <div class="p-6 rounded-2xl bg-slate-50/80 dark:bg-slate-800/50 space-y-2">
+                                    <div class="flex items-center gap-2 text-sky-600 dark:text-sky-400 font-bold text-sm">
                                         <i data-lucide="history" class="w-4 h-4"></i> Historia & Origen
                                     </div>
-                                    <p class="text-xs text-slate-600 leading-relaxed font-medium">${comp.brief.summary}</p>
+                                    <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-medium">${comp.brief.summary}</p>
                                 </div>
 
                                 <!-- Propuesta de Valor -->
-                                <div class="p-6 rounded-2xl bg-slate-50/80 space-y-2">
-                                    <div class="flex items-center gap-2 text-amber-600 font-bold text-sm">
+                                <div class="p-6 rounded-2xl bg-slate-50/80 dark:bg-slate-800/50 space-y-2">
+                                    <div class="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-bold text-sm">
                                         <i data-lucide="award" class="w-4 h-4"></i> Propuesta de Valor
                                     </div>
-                                    <p class="text-xs text-slate-600 leading-relaxed font-medium">${comp.brief.valueProposition}</p>
+                                    <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-medium">${comp.brief.valueProposition}</p>
                                 </div>
 
                                 <!-- Público Objetivo -->
-                                <div class="p-6 rounded-2xl bg-slate-50/80 space-y-2">
-                                    <div class="flex items-center gap-2 text-purple-600 font-bold text-sm">
+                                <div class="p-6 rounded-2xl bg-slate-50/80 dark:bg-slate-800/50 space-y-2">
+                                    <div class="flex items-center gap-2 text-purple-600 dark:text-purple-400 font-bold text-sm">
                                         <i data-lucide="users" class="w-4 h-4"></i> Cliente Ideal / Público
                                     </div>
-                                    <p class="text-xs text-slate-600 leading-relaxed font-medium">${comp.brief.targetAudience}</p>
+                                    <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-medium">${comp.brief.targetAudience}</p>
                                 </div>
 
                                 <!-- Concepto de Logotipo -->
-                                <div class="p-6 rounded-2xl bg-slate-50/80 space-y-2">
-                                    <div class="flex items-center gap-2 text-emerald-600 font-bold text-sm">
+                                <div class="p-6 rounded-2xl bg-slate-50/80 dark:bg-slate-800/50 space-y-2">
+                                    <div class="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold text-sm">
                                         <i data-lucide="sparkles" class="w-4 h-4"></i> Concepto de Logotipo
                                     </div>
-                                    <p class="text-xs text-slate-600 leading-relaxed font-medium">${comp.brief.logoConcept}</p>
+                                    <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-medium">${comp.brief.logoConcept}</p>
                                 </div>
 
                                 <!-- Paleta y Tipografía -->
-                                <div class="p-6 rounded-2xl bg-slate-50/80 space-y-2">
-                                    <div class="flex items-center gap-2 text-rose-600 font-bold text-sm">
+                                <div class="p-6 rounded-2xl bg-slate-50/80 dark:bg-slate-800/50 space-y-2">
+                                    <div class="flex items-center gap-2 text-rose-600 dark:text-rose-400 font-bold text-sm">
                                         <i data-lucide="palette" class="w-4 h-4"></i> Paleta & Estilo Visual
                                     </div>
-                                    <p class="text-xs text-slate-600 leading-relaxed font-medium">${comp.brief.colorPalette}</p>
-                                    <p class="text-xs text-slate-500 mt-2 font-bold">Tipografía: <span class="font-normal text-slate-700">${comp.brief.typographyStyle}</span></p>
+                                    <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-medium">${comp.brief.colorPalette}</p>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-2 font-bold">Tipografía: <span class="font-normal text-slate-700 dark:text-slate-200">${comp.brief.typographyStyle}</span></p>
                                 </div>
 
                                 <!-- Productos Clave -->
-                                <div class="p-6 rounded-2xl bg-slate-50/80 space-y-2">
-                                    <div class="flex items-center gap-2 text-teal-600 font-bold text-sm">
+                                <div class="p-6 rounded-2xl bg-slate-50/80 dark:bg-slate-800/50 space-y-2">
+                                    <div class="flex items-center gap-2 text-teal-600 dark:text-teal-400 font-bold text-sm">
                                         <i data-lucide="box" class="w-4 h-4"></i> Productos Clave
                                     </div>
-                                    <ul class="text-xs text-slate-600 space-y-1.5 font-medium">
+                                    <ul class="text-xs text-slate-600 dark:text-slate-300 space-y-1.5 font-medium">
                                         ${comp.brief.keyProducts.map(p => `<li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500"></i> ${p}</li>`).join('')}
                                     </ul>
                                 </div>
@@ -685,13 +739,13 @@ class CronogramaApp {
                             </div>
 
                             <!-- Puntos de Contacto -->
-                            <div class="p-6 rounded-2xl bg-slate-50/80">
-                                <h4 class="text-sm font-extrabold text-slate-900 mb-3 flex items-center gap-2">
-                                    <i data-lucide="layers" class="w-4 h-4 text-purple-600"></i> Puntos de Contacto y Aplicaciones Requeridas
+                            <div class="p-6 rounded-2xl bg-slate-50/80 dark:bg-slate-800/50">
+                                <h4 class="text-sm font-extrabold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
+                                    <i data-lucide="layers" class="w-4 h-4 text-purple-600 dark:text-purple-400"></i> Puntos de Contacto y Aplicaciones Requeridas
                                 </h4>
                                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                                     ${comp.brief.applications.map(app => `
-                                        <div class="p-3 rounded-xl bg-white shadow-sm text-xs font-semibold text-slate-700 flex items-center gap-2">
+                                        <div class="p-3 rounded-xl bg-white dark:bg-slate-800 shadow-sm text-xs font-semibold text-slate-700 dark:text-slate-200 flex items-center gap-2">
                                             <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-purple-500"></i>
                                             <span>${app}</span>
                                         </div>
@@ -722,49 +776,49 @@ class CronogramaApp {
 
         container.innerHTML = `
             <div class="space-y-8">
-                <div class="minimal-panel rounded-3xl p-6 md:p-8 bg-white shadow-sm">
-                    <h3 class="text-xl font-extrabold text-slate-900 mb-2">Carga de Trabajo por Integrante</h3>
+                <div class="minimal-panel rounded-3xl p-6 md:p-8 bg-white dark:bg-slate-900 shadow-sm">
+                    <h3 class="text-xl font-extrabold text-slate-900 dark:text-white mb-2">Carga de Trabajo por Integrante</h3>
                     <p class="text-xs text-slate-400 mb-6">Métricas de desempeño y avance individual de José Luis Vásquez, Marcela Castillo y Ezequiel Medrano.</p>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
                         ${memberStats.map(m => `
-                            <div class="p-6 rounded-2xl minimal-card bg-slate-50/90 hover:bg-white shadow-sm space-y-4">
+                            <div class="p-6 rounded-2xl minimal-card bg-slate-50/90 dark:bg-slate-800/60 hover:bg-white dark:hover:bg-slate-800 shadow-sm space-y-4">
                                 <div class="flex items-center gap-3">
                                     <div class="w-12 h-12 rounded-2xl ${m.color} font-extrabold text-sm flex items-center justify-center shadow-md">
                                         ${m.avatar}
                                     </div>
                                     <div>
-                                        <h4 class="font-extrabold text-slate-900 text-sm">${m.name}</h4>
-                                        <p class="text-[11px] text-slate-500 font-semibold">${m.role}</p>
+                                        <h4 class="font-extrabold text-slate-900 dark:text-white text-sm">${m.name}</h4>
+                                        <p class="text-[11px] text-slate-500 dark:text-slate-400 font-semibold">${m.role}</p>
                                     </div>
                                 </div>
 
                                 <div class="space-y-1">
                                     <div class="flex justify-between text-xs font-bold">
-                                        <span class="text-slate-600">Avance Individual</span>
-                                        <span class="text-emerald-600">${m.pct}%</span>
+                                        <span class="text-slate-600 dark:text-slate-300">Avance Individual</span>
+                                        <span class="text-emerald-600 dark:text-emerald-400">${m.pct}%</span>
                                     </div>
-                                    <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                                    <div class="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
                                         <div class="bg-emerald-500 h-full rounded-full" style="width: ${m.pct}%"></div>
                                     </div>
                                 </div>
 
-                                <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-200 text-xs">
-                                    <div class="p-2.5 rounded-xl bg-white shadow-sm">
+                                <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-200 dark:border-slate-700 text-xs">
+                                    <div class="p-2.5 rounded-xl bg-white dark:bg-slate-900 shadow-sm">
                                         <span class="text-slate-400 block text-[10px] font-bold uppercase">Total</span>
-                                        <strong class="text-slate-900 text-base">${m.total}</strong>
+                                        <strong class="text-slate-900 dark:text-white text-base">${m.total}</strong>
                                     </div>
-                                    <div class="p-2.5 rounded-xl bg-white shadow-sm">
+                                    <div class="p-2.5 rounded-xl bg-white dark:bg-slate-900 shadow-sm">
                                         <span class="text-slate-400 block text-[10px] font-bold uppercase">Completadas</span>
-                                        <strong class="text-emerald-600 text-base">${m.done}</strong>
+                                        <strong class="text-emerald-600 dark:text-emerald-400 text-base">${m.done}</strong>
                                     </div>
-                                    <div class="p-2.5 rounded-xl bg-white shadow-sm">
+                                    <div class="p-2.5 rounded-xl bg-white dark:bg-slate-900 shadow-sm">
                                         <span class="text-slate-400 block text-[10px] font-bold uppercase">En Proceso</span>
-                                        <strong class="text-amber-600 text-base">${m.inProg}</strong>
+                                        <strong class="text-amber-600 dark:text-amber-400 text-base">${m.inProg}</strong>
                                     </div>
-                                    <div class="p-2.5 rounded-xl bg-white shadow-sm">
+                                    <div class="p-2.5 rounded-xl bg-white dark:bg-slate-900 shadow-sm">
                                         <span class="text-slate-400 block text-[10px] font-bold uppercase">En Revisión</span>
-                                        <strong class="text-blue-600 text-base">${m.rev}</strong>
+                                        <strong class="text-blue-600 dark:text-blue-400 text-base">${m.rev}</strong>
                                     </div>
                                 </div>
                             </div>
@@ -773,26 +827,26 @@ class CronogramaApp {
                 </div>
 
                 <!-- Resumen de Fases -->
-                <div class="minimal-panel rounded-3xl p-6 md:p-8 bg-white shadow-sm">
-                    <h3 class="text-xl font-extrabold text-slate-900 mb-6">Estado de las 8 Fases del Proyecto</h3>
+                <div class="minimal-panel rounded-3xl p-6 md:p-8 bg-white dark:bg-slate-900 shadow-sm">
+                    <h3 class="text-xl font-extrabold text-slate-900 dark:text-white mb-6">Estado de las 8 Fases del Proyecto</h3>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         ${PHASES.map(phase => {
                             const pTasks = tasks.filter(t => t.phaseId === phase.id);
                             const done = pTasks.filter(t => t.status === 'completada').length;
                             const pct = pTasks.length > 0 ? Math.round((done / pTasks.length) * 100) : 0;
                             return `
-                                <div class="p-4 rounded-2xl bg-slate-50/80 hover:bg-white shadow-sm transition">
+                                <div class="p-4 rounded-2xl bg-slate-50/80 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800 shadow-sm transition">
                                     <div class="flex items-center gap-2 mb-2">
-                                        <span class="w-6 h-6 rounded-lg ${phase.bg} text-xs font-bold flex items-center justify-center">
+                                        <span class="w-6 h-6 rounded-lg ${phase.bg} dark:bg-slate-700 dark:text-slate-200 text-xs font-bold flex items-center justify-center">
                                             ${phase.number}
                                         </span>
-                                        <h5 class="text-xs font-bold text-slate-800 truncate">${phase.name}</h5>
+                                        <h5 class="text-xs font-bold text-slate-800 dark:text-white truncate">${phase.name}</h5>
                                     </div>
-                                    <div class="flex justify-between text-[11px] text-slate-500 font-semibold mb-1">
+                                    <div class="flex justify-between text-[11px] text-slate-500 dark:text-slate-400 font-semibold mb-1">
                                         <span>${done}/${pTasks.length} tareas</span>
-                                        <span class="font-bold text-slate-800">${pct}%</span>
+                                        <span class="font-bold text-slate-800 dark:text-white">${pct}%</span>
                                     </div>
-                                    <div class="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+                                    <div class="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
                                         <div class="bg-emerald-500 h-full rounded-full" style="width: ${pct}%"></div>
                                     </div>
                                 </div>
@@ -805,7 +859,7 @@ class CronogramaApp {
     }
 
     // --- TASK UPDATES ---
-    updateTaskStatus(taskId, newStatus, companyKey = this.currentCompany) {
+    updateTaskStatus(taskId, newStatus, companyKey = this.currentCompany, selectElement = null) {
         if (companyKey === 'all') {
             Object.keys(this.data).forEach(k => {
                 const task = this.data[k].tasks.find(t => t.id === taskId);
@@ -816,13 +870,17 @@ class CronogramaApp {
             if (task) task.status = newStatus;
         }
 
+        if (selectElement) {
+            selectElement.className = `status-select ${this.getStatusClass(newStatus)}`;
+        }
+
         this.saveData();
         this.renderStats();
         this.renderContent();
         this.showToast("Estado actualizado.", "success");
     }
 
-    updateTaskAssignee(taskId, newAssignee, companyKey = this.currentCompany) {
+    updateTaskAssignee(taskId, newAssignee, companyKey = this.currentCompany, selectElement = null) {
         if (companyKey === 'all') {
             Object.keys(this.data).forEach(k => {
                 const task = this.data[k].tasks.find(t => t.id === taskId);
@@ -831,6 +889,10 @@ class CronogramaApp {
         } else if (this.data[companyKey]) {
             const task = this.data[companyKey].tasks.find(t => t.id === taskId);
             if (task) task.assignedTo = newAssignee;
+        }
+
+        if (selectElement) {
+            selectElement.className = `assignee-select ${this.getAssigneeClass(newAssignee)}`;
         }
 
         this.saveData();
@@ -1048,7 +1110,7 @@ class CronogramaApp {
         if (type === 'success') bg = 'bg-emerald-600 text-white';
         else if (type === 'info') bg = 'bg-pink-600 text-white';
 
-        toast.className = `fixed bottom-6 right-6 z-50 px-5 py-3 rounded-2xl shadow-xl text-xs font-bold flex items-center gap-2 transition-all transform duration-300 ${bg}`;
+        toast.className = `fixed bottom-6 right-6 z-50 px-5 py-3 rounded-2xl shadow-2xl text-xs font-bold flex items-center gap-2 transition-all transform duration-300 ${bg}`;
         toast.innerHTML = `<i data-lucide="info" class="w-4 h-4"></i> ${message}`;
         document.body.appendChild(toast);
         
