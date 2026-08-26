@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Minimalist Dashboard Design System (Light & Dark Mode Support)
+   Minimalist Dashboard Design System (Mobile & Tablet Fully Responsive)
    ========================================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
@@ -10,7 +10,7 @@
     
     /* Light Theme (Default) */
     --bg-app: #f4f6fb;
-    --bg-header: rgba(255, 255, 255, 0.92);
+    --bg-header: rgba(255, 255, 255, 0.94);
     --bg-card: #ffffff;
     --bg-card-subtle: #f8fafc;
     --bg-card-inner: rgba(241, 245, 249, 0.7);
@@ -28,7 +28,7 @@
 /* Dark Mode Variables */
 html.dark {
     --bg-app: #090d16;
-    --bg-header: rgba(9, 13, 22, 0.92);
+    --bg-header: rgba(9, 13, 22, 0.94);
     --bg-card: #111726;
     --bg-card-subtle: #172033;
     --bg-card-inner: #1a243a;
@@ -46,6 +46,7 @@ html.dark {
 * {
     font-family: var(--font-main);
     box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -56,29 +57,28 @@ body {
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Custom Scrollbars */
-::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+/* Hide Scrollbar for Horizontal Touch Swiping on Mobile */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
 }
-::-webkit-scrollbar-track {
-    background: transparent;
-}
-::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 9999px;
-}
-html.dark ::-webkit-scrollbar-thumb {
-    background: #334155;
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
 
 /* Minimalist Clean Cards & Panels */
 .minimal-card {
     background: var(--bg-card);
-    border-radius: 20px;
+    border-radius: 18px;
     box-shadow: var(--shadow-card);
     border: none;
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (min-width: 640px) {
+    .minimal-card {
+        border-radius: 20px;
+    }
 }
 
 .minimal-card:hover {
@@ -88,13 +88,19 @@ html.dark ::-webkit-scrollbar-thumb {
 
 .minimal-panel {
     background: var(--bg-card);
-    border-radius: 24px;
+    border-radius: 20px;
     box-shadow: var(--shadow-card);
     border: none;
     transition: background-color 0.3s ease;
 }
 
-/* Vibrant Gradient Classes (Stay beautiful in both Light and Dark) */
+@media (min-width: 640px) {
+    .minimal-panel {
+        border-radius: 24px;
+    }
+}
+
+/* Vibrant Gradient Classes */
 .bg-grad-pink {
     background: linear-gradient(135deg, #f43f5e 0%, #ec4899 50%, #d946ef 100%);
 }
@@ -135,17 +141,18 @@ html.dark ::-webkit-scrollbar-thumb {
 }
 
 /* ==========================================================================
-   COLOR IDENTIFIERS FOR ENCARGADOS (Drop-down Distinctive Colors)
+   COLOR IDENTIFIERS FOR ENCARGADOS (Mobile Touch Friendly)
    ========================================================================== */
 .assignee-select {
     border: none;
     border-radius: 12px;
     font-weight: 700;
     font-size: 0.75rem;
-    padding: 0.5rem 2rem 0.5rem 0.75rem;
-    background-position: right 0.5rem center;
+    min-height: 40px;
+    padding: 0.5rem 1.75rem 0.5rem 0.65rem;
+    background-position: right 0.4rem center;
     background-repeat: no-repeat;
-    background-size: 1.2em 1.2em;
+    background-size: 1.1em 1.1em;
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
@@ -153,7 +160,7 @@ html.dark ::-webkit-scrollbar-thumb {
     transition: all 0.2s ease;
 }
 
-/* José Luis Vásquez (Blue Theme) */
+/* José Luis Vásquez */
 .assignee-jose {
     background-color: #ebf5ff !important;
     color: #1d4ed8 !important;
@@ -167,7 +174,7 @@ html.dark .assignee-jose {
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2393c5fd' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
 }
 
-/* Marcela Castillo (Rose / Magenta Theme) */
+/* Marcela Castillo */
 .assignee-marcela {
     background-color: #fff1f2 !important;
     color: #e11d48 !important;
@@ -181,7 +188,7 @@ html.dark .assignee-marcela {
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23fda4af' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
 }
 
-/* Ezequiel Medrano (Emerald / Green Theme) */
+/* Ezequiel Medrano */
 .assignee-ezequiel {
     background-color: #ecfdf5 !important;
     color: #047857 !important;
@@ -195,7 +202,7 @@ html.dark .assignee-ezequiel {
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236ee7b7' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
 }
 
-/* Trabajo Grupal (Purple Theme) */
+/* Trabajo Grupal */
 .assignee-grupal {
     background-color: #f5f3ff !important;
     color: #7c3aed !important;
@@ -210,17 +217,18 @@ html.dark .assignee-grupal {
 }
 
 /* ==========================================================================
-   COLOR IDENTIFIERS FOR ESTADOS (Drop-down Distinctive Status Colors)
+   COLOR IDENTIFIERS FOR ESTADOS (Mobile Touch Friendly)
    ========================================================================== */
 .status-select {
     border: none;
     border-radius: 12px;
     font-weight: 800;
     font-size: 0.75rem;
-    padding: 0.5rem 2rem 0.5rem 0.75rem;
-    background-position: right 0.5rem center;
+    min-height: 40px;
+    padding: 0.5rem 1.75rem 0.5rem 0.65rem;
+    background-position: right 0.4rem center;
     background-repeat: no-repeat;
-    background-size: 1.2em 1.2em;
+    background-size: 1.1em 1.1em;
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
@@ -228,7 +236,7 @@ html.dark .assignee-grupal {
     transition: all 0.2s ease;
 }
 
-/* Pendiente (Neutral Slate) */
+/* Pendiente */
 .status-pendiente {
     background-color: #f1f5f9 !important;
     color: #475569 !important;
@@ -241,7 +249,7 @@ html.dark .status-pendiente {
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2394a3b8' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
 }
 
-/* En Proceso (Warm Amber / Orange) */
+/* En Proceso */
 .status-en_proceso {
     background-color: #fef3c7 !important;
     color: #b45309 !important;
@@ -255,7 +263,7 @@ html.dark .status-en_proceso {
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23fcd34d' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
 }
 
-/* En Revisión (Vibrant Indigo / Blue) */
+/* En Revisión */
 .status-en_revision {
     background-color: #dbeafe !important;
     color: #1d4ed8 !important;
@@ -269,7 +277,7 @@ html.dark .status-en_revision {
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2393c5fd' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
 }
 
-/* Completada (Fresh Emerald / Green) */
+/* Completada */
 .status-completada {
     background-color: #d1fae5 !important;
     color: #065f46 !important;
@@ -290,6 +298,7 @@ select.custom-select-light {
     border-radius: 12px;
     color: var(--text-primary);
     font-weight: 600;
+    min-height: 42px;
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2394a3b8' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
     background-position: right 0.5rem center;
     background-repeat: no-repeat;
@@ -303,14 +312,14 @@ select.custom-select-light {
 
 /* Modals */
 .modal-backdrop-custom {
-    background: rgba(4, 7, 15, 0.6);
+    background: rgba(4, 7, 15, 0.7);
     backdrop-filter: blur(8px);
 }
 
 @keyframes modalPop {
     0% {
         opacity: 0;
-        transform: scale(0.96) translateY(10px);
+        transform: scale(0.95) translateY(12px);
     }
     100% {
         opacity: 1;
