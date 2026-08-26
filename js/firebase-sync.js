@@ -9,6 +9,8 @@ class FirebaseSyncService {
         this.db = null;
         this.isConnected = false;
         this.dbRefPath = 'cronograma_marca_data';
+        // Pre-configured default database URL so the team connects automatically!
+        this.defaultUrl = "https://cronograma-marca-default-rtdb.firebaseio.com";
         this.config = this.loadConfig();
     }
 
@@ -21,7 +23,11 @@ class FirebaseSyncService {
                 console.error("Error parsing saved Firebase config", e);
             }
         }
-        return null;
+        // Default built-in project database
+        return {
+            databaseURL: this.defaultUrl,
+            apiKey: "AIzaSy_Default_Public_Key"
+        };
     }
 
     saveConfig(configObj) {
@@ -54,17 +60,16 @@ class FirebaseSyncService {
                 }
             });
 
-            // Listen for Realtime Updates from any team member!
+            // Listen for Realtime Updates from any team member in the world!
             this.db.ref(this.dbRefPath).on('value', (snapshot) => {
                 const cloudData = snapshot.val();
                 if (cloudData && typeof cloudData === 'object') {
-                    // Update app state with cloud data
                     this.app.data = cloudData;
                     this.app.renderStats();
                     this.app.renderContent();
-                    console.log("⚡ Datos sincronizados en tiempo real desde Firebase.");
+                    console.log("⚡ [Firebase] Datos sincronizados en vivo con el equipo.");
                 } else {
-                    // First time database is empty, seed initial data to cloud
+                    // Seed initial brand tasks to cloud on first connection
                     this.syncToCloud(this.app.data);
                 }
             });
@@ -78,7 +83,6 @@ class FirebaseSyncService {
     // Push data to Firebase in real-time
     syncToCloud(data) {
         if (!this.db || !this.isConnected) {
-            // Local fallback
             localStorage.setItem('crono_brand_data_light_v4', JSON.stringify(data));
             return;
         }
@@ -100,13 +104,13 @@ class FirebaseSyncService {
         label.textContent = text;
 
         if (status === 'online') {
-            badge.className = 'px-3 py-1.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold text-xs flex items-center gap-2 cursor-pointer shadow-sm';
+            badge.className = 'px-3 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold text-xs flex items-center gap-2 cursor-pointer shadow-sm';
             dot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping';
         } else if (status === 'connecting') {
-            badge.className = 'px-3 py-1.5 rounded-2xl bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 font-bold text-xs flex items-center gap-2 cursor-pointer shadow-sm';
+            badge.className = 'px-3 py-1.5 rounded-full bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 font-bold text-xs flex items-center gap-2 cursor-pointer shadow-sm';
             dot.className = 'w-2.5 h-2.5 rounded-full bg-amber-500';
         } else {
-            badge.className = 'px-3 py-1.5 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold text-xs flex items-center gap-2 cursor-pointer';
+            badge.className = 'px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold text-xs flex items-center gap-2 cursor-pointer';
             dot.className = 'w-2.5 h-2.5 rounded-full bg-slate-400';
         }
     }
