@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cronograma de Manual de Marca | Artesanías Maverick & Variedades Franco</title>
+    <meta name="description" content="Mini App interactiva para la gestión y seguimiento del cronograma de actividades de identidad visual y manual de marca para Artesanías Maverick y Variedades Franco.">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            maverick: '#0284c7',
+                            franco: '#92400e',
+                            dark: '#090d16',
+                            card: '#0f172a'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="bg-[#070b14] text-slate-100 min-h-screen flex flex-col antialiased selection:bg-sky-500 selection:text-white">
+
+    <!-- Top Navigation Bar -->
+    <header class="sticky top-0 z-40 border-b border-slate-800/80 bg-[#070b14]/85 backdrop-blur-xl no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+            
+            <!-- App Logo / Title -->
+            <div class="flex items-center gap-3">
+                <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-sky-600 via-indigo-600 to-amber-500 p-0.5 shadow-lg shadow-sky-900/30">
+                    <div class="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center">
+                        <i data-lucide="layers" class="w-5 h-5 text-sky-400"></i>
+                    </div>
+                </div>
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-sky-400">Panel de Trabajo Grupal</span>
+                    <h1 class="text-lg md:text-xl font-extrabold text-white tracking-tight flex items-center gap-2">
+                        Cronograma de Marca
+                        <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700 hidden sm:inline-block">v2.0</span>
+                    </h1>
+                </div>
+            </div>
+
+            <!-- Team Avatars Summary -->
+            <div class="hidden lg:flex items-center gap-2 bg-slate-900/80 px-4 py-2 rounded-2xl border border-slate-800">
+                <span class="text-xs text-slate-400 mr-1 font-medium">Equipo:</span>
+                <div class="flex -space-x-2">
+                    <div class="w-8 h-8 rounded-full bg-blue-600 border-2 border-slate-950 text-white text-xs font-bold flex items-center justify-center shadow" title="José Luis Vásquez">JV</div>
+                    <div class="w-8 h-8 rounded-full bg-rose-600 border-2 border-slate-950 text-white text-xs font-bold flex items-center justify-center shadow" title="Marcela Castillo">MC</div>
+                    <div class="w-8 h-8 rounded-full bg-emerald-600 border-2 border-slate-950 text-white text-xs font-bold flex items-center justify-center shadow" title="Ezequiel Medrano">EM</div>
+                </div>
+            </div>
+
+            <!-- Actions Controls -->
+            <div class="flex items-center gap-2">
+                <button id="btn-new-task" class="px-4 py-2.5 bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white text-sm font-semibold rounded-xl transition shadow-lg shadow-sky-900/30 flex items-center gap-2">
+                    <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                    <span class="hidden sm:inline">Nueva Tarea</span>
+                </button>
+
+                <!-- More options dropdown / buttons -->
+                <div class="flex items-center gap-1.5 bg-slate-900/80 p-1 rounded-xl border border-slate-800">
+                    <button id="btn-export-csv" title="Exportar CSV" class="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition">
+                        <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+                    </button>
+                    <button id="btn-export-json" title="Copia de Seguridad JSON" class="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition">
+                        <i data-lucide="download" class="w-4 h-4"></i>
+                    </button>
+                    <button id="btn-print-report" title="Imprimir / PDF" class="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition">
+                        <i data-lucide="printer" class="w-4 h-4"></i>
+                    </button>
+                    <button id="btn-reset-data" title="Restablecer plantilla inicial" class="p-2 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition">
+                        <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full space-y-8">
+        
+        <!-- Company Switcher Tabs -->
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 no-print">
+            <div class="flex p-1.5 rounded-2xl bg-slate-900/90 border border-slate-800 w-full sm:w-auto shadow-inner overflow-x-auto">
+                <button data-company-tab="maverick" class="flex-1 sm:flex-none px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold border-b-2 flex items-center justify-center gap-2.5 transition tab-active-maverick">
+                    <span class="w-2.5 h-2.5 rounded-full bg-sky-400 animate-pulse"></span>
+                    Artesanías Maverick
+                </button>
+                <button data-company-tab="franco" class="flex-1 sm:flex-none px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold border-b-2 flex items-center justify-center gap-2.5 transition border-transparent text-slate-400">
+                    <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+                    Variedades Franco
+                </button>
+                <button data-company-tab="all" class="flex-1 sm:flex-none px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold border-b-2 flex items-center justify-center gap-2.5 transition border-transparent text-slate-400">
+                    <i data-lucide="layout-grid" class="w-4 h-4"></i>
+                    Vista Unificada
+                </button>
+            </div>
+
+            <!-- View Switcher (List, Kanban, Brief, Metrics) -->
+            <div class="flex items-center gap-1.5 bg-slate-900/90 p-1.5 rounded-2xl border border-slate-800 w-full sm:w-auto overflow-x-auto">
+                <button data-view-tab="list" class="px-4 py-2 text-sm font-semibold rounded-lg bg-slate-800 text-white shadow-sm border border-slate-700 flex items-center gap-2">
+                    <i data-lucide="list" class="w-4 h-4"></i> Lista
+                </button>
+                <button data-view-tab="kanban" class="px-4 py-2 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/50 flex items-center gap-2 transition">
+                    <i data-lucide="kanban" class="w-4 h-4"></i> Tablero
+                </button>
+                <button data-view-tab="brief" class="px-4 py-2 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/50 flex items-center gap-2 transition">
+                    <i data-lucide="book-marked" class="w-4 h-4"></i> Brief & ADN
+                </button>
+                <button data-view-tab="metrics" class="px-4 py-2 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/50 flex items-center gap-2 transition">
+                    <i data-lucide="bar-chart-3" class="w-4 h-4"></i> Métricas
+                </button>
+            </div>
+        </div>
+
+        <!-- Dynamic Company Hero Banner -->
+        <section id="company-hero-banner"></section>
+
+        <!-- Stats Overview Cards -->
+        <section id="stats-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></section>
+
+        <!-- Filters & Search Toolbar (Only visible in List and Kanban) -->
+        <section class="p-4 rounded-2xl glass-panel border border-slate-800/90 no-print">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                
+                <!-- Search Box -->
+                <div class="relative">
+                    <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+                    <input type="text" id="search-input" placeholder="Buscar tarea o entregable..." 
+                           class="w-full bg-slate-900 border border-slate-700/80 rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-sky-500 transition">
+                </div>
+
+                <!-- Filter by Assignee -->
+                <div>
+                    <select id="filter-assignee" class="custom-select w-full bg-slate-900 border border-slate-700/80 rounded-xl px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-sky-500">
+                        <option value="all">👥 Todos los encargados</option>
+                        <option value="José Luis Vásquez">José Luis Vásquez</option>
+                        <option value="Marcela Castillo">Marcela Castillo</option>
+                        <option value="Ezequiel Medrano">Ezequiel Medrano</option>
+                        <option value="Trabajo Grupal (Equipo)">Trabajo Grupal (Equipo)</option>
+                    </select>
+                </div>
+
+                <!-- Filter by Status -->
+                <div>
+                    <select id="filter-status" class="custom-select w-full bg-slate-900 border border-slate-700/80 rounded-xl px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-sky-500">
+                        <option value="all">📌 Todos los estados</option>
+                        <option value="pendiente">Pendiente</option>
+                        <option value="en_proceso">En Proceso</option>
+                        <option value="en_revision">En Revisión</option>
+                        <option value="completada">Completada</option>
+                    </select>
+                </div>
+
+                <!-- Filter by Phase -->
+                <div>
+                    <select id="filter-phase" class="custom-select w-full bg-slate-900 border border-slate-700/80 rounded-xl px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-sky-500">
+                        <option value="all">📂 Todas las fases (1 a 8)</option>
+                        <option value="fase1">Fase 1: Investigación & Briefing</option>
+                        <option value="fase2">Fase 2: Identidad Visual (Logo & ADN)</option>
+                        <option value="fase3">Fase 3: Manual de Marca Editorial</option>
+                        <option value="fase4">Fase 4: Catálogo & Fotografía</option>
+                        <option value="fase5">Fase 5: Piezas Gráficas Redes Sociales</option>
+                        <option value="fase6">Fase 6: Sitio Web (UI/UX & Prototipo)</option>
+                        <option value="fase7">Fase 7: Aplicaciones, Punto de Venta & Packaging</option>
+                        <option value="fase8">Fase 8: Control de Calidad & Entregables</option>
+                    </select>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Main Dynamic View Container -->
+        <section id="view-container"></section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800/80 bg-slate-950/60 py-6 mt-12 text-center text-xs text-slate-500 no-print">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p>Cronograma de Manual de Marca © 2026 | Desarrollado para <strong>Artesanías Maverick</strong> & <strong>Variedades Franco</strong></p>
+            <p class="text-slate-400">Equipo: <strong>José Luis Vásquez</strong> • <strong>Marcela Castillo</strong> • <strong>Ezequiel Medrano</strong></p>
+        </div>
+    </footer>
+
+    <!-- Task Modal (Add / Edit) -->
+    <div id="task-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-xl p-6 md:p-8 modal-content-animated shadow-2xl space-y-6">
+            
+            <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+                <h3 id="modal-title" class="text-lg font-bold text-white">Nueva Tarea de Cronograma</h3>
+                <button onclick="app.closeTaskModal()" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <form id="task-form" class="space-y-4">
+                <input type="hidden" id="task-id">
+
+                <!-- Company Selector -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1.5">Empresa</label>
+                    <select id="task-company" class="custom-select w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white">
+                        <option value="maverick">Artesanías Maverick</option>
+                        <option value="franco">Variedades Franco</option>
+                    </select>
+                </div>
+
+                <!-- Title -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1.5">Título de la Tarea *</label>
+                    <input type="text" id="task-title" required placeholder="Ej: Diseño de Logotipo y Retícula..." 
+                           class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-sky-500">
+                </div>
+
+                <!-- Phase & Assignee -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1.5">Fase del Proyecto</label>
+                        <select id="task-phase" class="custom-select w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white">
+                            <option value="fase1">Fase 1: Investigación & Briefing</option>
+                            <option value="fase2">Fase 2: Identidad Visual (Logo & ADN)</option>
+                            <option value="fase3">Fase 3: Manual de Marca Editorial</option>
+                            <option value="fase4">Fase 4: Catálogo & Fotografía</option>
+                            <option value="fase5">Fase 5: Piezas Gráficas Redes Sociales</option>
+                            <option value="fase6">Fase 6: Sitio Web (UI/UX & Prototipo)</option>
+                            <option value="fase7">Fase 7: Aplicaciones & Packaging</option>
+                            <option value="fase8">Fase 8: Control de Calidad & Entregables</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1.5">Persona Encargada</label>
+                        <select id="task-assigned" class="custom-select w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white">
+                            <option value="José Luis Vásquez">José Luis Vásquez</option>
+                            <option value="Marcela Castillo">Marcela Castillo</option>
+                            <option value="Ezequiel Medrano">Ezequiel Medrano</option>
+                            <option value="Trabajo Grupal (Equipo)">Trabajo Grupal (Equipo)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Status & Priority & Deadline -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1.5">Estado</label>
+                        <select id="task-status" class="custom-select w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white">
+                            <option value="pendiente">Pendiente</option>
+                            <option value="en_proceso">En Proceso</option>
+                            <option value="en_revision">En Revisión</option>
+                            <option value="completada">Completada</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1.5">Prioridad</label>
+                        <select id="task-priority" class="custom-select w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white">
+                            <option value="alta">Alta</option>
+                            <option value="media">Media</option>
+                            <option value="normal">Normal</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1.5">Sprint / Fecha</label>
+                        <input type="text" id="task-deadline" placeholder="Semana 2" 
+                               class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-sky-500">
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1.5">¿Qué se va a hacer? (Descripción)</label>
+                    <textarea id="task-desc" rows="2" placeholder="Detalla los pasos a seguir..." 
+                              class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-sky-500"></textarea>
+                </div>
+
+                <!-- Deliverable -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1.5">Entregable Requerido</label>
+                    <input type="text" id="task-deliverable" placeholder="Ej: Archivos .AI, .PNG y manual en PDF..." 
+                           class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-sky-500">
+                </div>
+
+                <!-- Buttons -->
+                <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-800">
+                    <button type="button" onclick="app.closeTaskModal()" class="px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-800 transition">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="px-5 py-2.5 bg-sky-600 hover:bg-sky-500 text-white rounded-xl text-xs font-bold transition shadow-lg shadow-sky-900/30">
+                        Guardar Tarea
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/data.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
